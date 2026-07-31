@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>
+        Chat - RoomChat
+    </title>
+
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+</head>
+
+
+
+<body>
+
+
+<div class="chat-container">
+
+
+
+    <!-- Header -->
+
+    <header class="chat-header">
+
+
+        <div>
+
+            <h2>
+                RoomChat
+            </h2>
+
+
+            <p id="roomStatus">
+
+                Connecting...
+
+            </p>
+
+        </div>
+
+
+
+        <div>
+
+            <span id="onlineCount">
+
+                0 Online
+
+            </span>
+
+        </div>
+
+
+    </header>
+
+
+
+
+
+
+    <!-- Messages -->
+
+    <main
+
+        id="messageBox"
+
+        class="message-box"
+
+    >
+
+
+    </main>
+
+
+
+
+
+
+
+    <!-- Input Area -->
+
+    <footer class="chat-input-area">
+
+
+
+        <input
+
+            type="file"
+
+            id="fileInput"
+
+            hidden
+
+        >
+
+
+
+
+
+        <button
+
+            id="uploadBtn"
+
+            class="icon-btn"
+
+        >
+
+            📎
+
+        </button>
+
+
+
+
+
+        <input
+
+            type="text"
+
+            id="messageInput"
+
+            placeholder="Type message..."
+
+        >
+
+
+
+
+
+        <button
+
+            id="sendBtn"
+
+            class="primary-btn"
+
+        >
+
+            Send
+
+        </button>
+
+
+
+    </footer>
+
+
+
+</div>
+
+
+
+
+
+
+<script>
+
+    const ROOM_ID = "{{ room_id }}";
+
+</script>
+
+
+
+
+
+<script src="/static/js/main.js"></script>
+
+<script src="/static/js/chat.js"></script>
+
+<script src="/static/js/upload.js"></script>
+
+
+
+</body>
+
+</html>
