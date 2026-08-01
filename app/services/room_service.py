@@ -1,5 +1,6 @@
 """
 RoomChat V2
+
 Room Service
 
 Handles:
@@ -9,13 +10,20 @@ Handles:
 - User-room assignment
 """
 
+
 from sqlalchemy.orm import Session
 
-from app.models.models import Room
-from app.models.models import RoomMember
-from app.models.models import User
+
+from app.models.models import (
+    Room,
+    RoomMember,
+    User
+)
+
 
 from app.services.security import hash_password
+
+
 
 
 
@@ -24,14 +32,11 @@ from app.services.security import hash_password
 # ==========================================================
 
 def create_room(
-
     db: Session,
-
     name: str,
-
     password: str
-
 ):
+
 
     room = Room(
 
@@ -53,17 +58,21 @@ def create_room(
 
 
 
+
+
+
 # ==========================================================
 # GET ALL ROOMS
 # ==========================================================
 
 def get_all_rooms(
-
     db: Session
-
 ):
 
     return db.query(Room).all()
+
+
+
 
 
 
@@ -72,12 +81,10 @@ def get_all_rooms(
 # ==========================================================
 
 def get_room(
-
     db: Session,
-
     room_id: int
-
 ):
+
 
     return db.query(Room).filter(
 
@@ -87,18 +94,17 @@ def get_room(
 
 
 
+
+
+
 # ==========================================================
 # ADD USER TO ROOM
 # ==========================================================
 
 def add_user_to_room(
-
     db: Session,
-
     user_id: int,
-
     room_id: int
-
 ):
 
 
@@ -115,6 +121,7 @@ def add_user_to_room(
     if existing:
 
         return existing
+
 
 
 
@@ -138,18 +145,17 @@ def add_user_to_room(
 
 
 
+
+
+
 # ==========================================================
 # CHECK USER ROOM ACCESS
 # ==========================================================
 
 def user_can_access_room(
-
     db: Session,
-
     user_id: int,
-
     room_id: int
-
 ):
 
 
@@ -167,11 +173,15 @@ def user_can_access_room(
 
 
 
-    # Admin can access every room
+
+    # Admin access to every room
 
     if user.role == "admin":
 
         return True
+
+
+
 
 
 
@@ -185,11 +195,13 @@ def user_can_access_room(
 
 
 
+
+
     if member:
 
         return True
 
 
 
+
     return False
-    

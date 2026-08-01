@@ -343,12 +343,18 @@ def assign_room(
     db: Session = Depends(get_db)
 ):
 
-    result = assign_user_room(
-        db,
-        data.user_id,
-        data.room_id
-    )
+    member = assign_user_room(
+    db,
+    data.user_id,
+    data.room_id
+)
 
+
+return {
+    "message":"User assigned successfully",
+    "user_id":member.user_id,
+    "room_id":member.room_id
+}
 
     return {
 
