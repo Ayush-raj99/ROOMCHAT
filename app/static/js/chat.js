@@ -5,10 +5,9 @@ Chat JavaScript
 
 Features:
 - WebSocket chat
-- Left/right message bubbles
-- WhatsApp style ticks
-- Image messages
+- Left/right message alignment
 - Message history
+- Image messages
 */
 
 
@@ -20,13 +19,11 @@ let sendBtn;
 
 
 
-
-// =====================================
-// GET CURRENT USER
-// =====================================
+// ===============================
+// GET USER
+// ===============================
 
 function getCurrentUser(){
-
 
     const user =
         localStorage.getItem("user");
@@ -47,16 +44,13 @@ function getCurrentUser(){
 
 
 
-
-
-// =====================================
-// START CHAT
-// =====================================
+// ===============================
+// START
+// ===============================
 
 document.addEventListener(
 "DOMContentLoaded",
 function(){
-
 
 
     messageBox =
@@ -78,23 +72,16 @@ function(){
 
 
 
-
     const user =
         getCurrentUser();
 
 
 
-
     if(!user){
-
 
         alert(
             "User not found"
         );
-
-
-        window.location.href="/";
-
 
         return;
 
@@ -102,9 +89,15 @@ function(){
 
 
 
-
     connectSocket(user);
 
+
+    loadOldMessages(
+        user.room_id
+    );
+
+
+    setupSendButton();
 
 
 });
@@ -115,20 +108,11 @@ function(){
 
 
 
-
-
-// =====================================
-// CONNECT WEBSOCKET
-// =====================================
-
+// ===============================
+// WEBSOCKET
+// ===============================
 
 function connectSocket(user){
-
-
-
-    const roomId =
-        user.room_id;
-
 
 
 
@@ -141,12 +125,8 @@ function connectSocket(user){
 
 
 
-
-
     const url =
-    `${protocol}://${window.location.host}/ws/${roomId}/${user.id}`;
-
-
+    `${protocol}://${window.location.host}/ws/${user.room_id}/${user.id}`;
 
 
 
@@ -157,8 +137,6 @@ function connectSocket(user){
 
 
 
-
-
     socket =
         new WebSocket(url);
 
@@ -166,15 +144,11 @@ function connectSocket(user){
 
 
 
-
-    socket.onopen =
-    function(){
-
+    socket.onopen=function(){
 
         updateStatus(
             "Connected 🟢"
         );
-
 
     };
 
@@ -182,11 +156,7 @@ function connectSocket(user){
 
 
 
-
-
-    socket.onmessage =
-    function(event){
-
+    socket.onmessage=function(event){
 
 
         const data =
@@ -195,61 +165,34 @@ function connectSocket(user){
             );
 
 
-
         displayMessage(data);
 
 
-
     };
 
 
 
 
 
-
-
-    socket.onerror =
-    function(error){
-
-
-        console.log(
-            "Socket error",
-            error
-        );
-
-
-        updateStatus(
-            "Error 🔴"
-        );
-
-
-    };
-
-
-
-
-
-
-
-    socket.onclose =
-    function(){
-
+    socket.onclose=function(){
 
         updateStatus(
             "Disconnected 🔴"
         );
 
-
     };
 
 
 
 
 
-    loadOldMessages(roomId);
+    socket.onerror=function(){
 
+        updateStatus(
+            "Error 🔴"
+        );
 
-    setupSendButton();
+    };
 
 
 
@@ -261,11 +204,9 @@ function connectSocket(user){
 
 
 
-
-
-// =====================================
+// ===============================
 // STATUS
-// =====================================
+// ===============================
 
 
 function updateStatus(text){
@@ -277,13 +218,9 @@ function updateStatus(text){
         );
 
 
-
     if(status){
 
-
-        status.innerHTML =
-            text;
-
+        status.innerText=text;
 
     }
 
@@ -296,11 +233,9 @@ function updateStatus(text){
 
 
 
-
-
-// =====================================
+// ===============================
 // SEND BUTTON
-// =====================================
+// ===============================
 
 
 function setupSendButton(){
@@ -315,9 +250,7 @@ function setupSendButton(){
 
 
 
-
-    sendBtn.onclick =
-    function(){
+    sendBtn.onclick=function(){
 
         sendMessage();
 
@@ -327,25 +260,19 @@ function setupSendButton(){
 
 
 
-
     messageInput.addEventListener(
     "keypress",
-    function(event){
+    function(e){
 
 
-
-        if(event.key==="Enter"){
-
+        if(e.key==="Enter"){
 
             sendMessage();
-
 
         }
 
 
-
     });
-
 
 
 }
@@ -356,11 +283,9 @@ function setupSendButton(){
 
 
 
-
-
-// =====================================
+// ===============================
 // SEND MESSAGE
-// =====================================
+// ===============================
 
 
 function sendMessage(){
@@ -372,11 +297,11 @@ function sendMessage(){
 
 
 
-
-
     if(
-        text === "" ||
-        socket === null ||
+        text===""
+        ||
+        !socket
+        ||
         socket.readyState !== WebSocket.OPEN
     ){
 
@@ -386,12 +311,7 @@ function sendMessage(){
 
 
 
-
-
-
-
     socket.send(
-
         JSON.stringify({
 
             type:"text",
@@ -399,10 +319,7 @@ function sendMessage(){
             content:text
 
         })
-
     );
-
-
 
 
 
@@ -420,85 +337,68 @@ function sendMessage(){
 
 
 
-// =====================================
-// LOAD OLD MESSAGES
-// =====================================
+// ===============================
+// LOAD HISTORY
+// ===============================
 
 
 async function loadOldMessages(roomId){
 
 
-
-    try{
-
-
-        const response =
-            await fetch(
-                `/chat/${roomId}/messages`
-            );
+try{
 
 
-
-        const messages =
-            await response.json();
+const response =
+await fetch(
+`/chat/${roomId}/messages`
+);
 
 
 
-
-
-        messages.forEach(
-        function(message){
-
-
-
-            displayMessage({
-
-
-                type:
-                message.is_image
-                ?
-                "image"
-                :
-                "text",
+const messages =
+await response.json();
 
 
 
-                user_id:
-                message.user_id,
+messages.forEach(
+message=>{
+
+
+displayMessage({
+
+type:
+message.is_image
+?
+"image"
+:
+"text",
+
+
+user_id:
+message.user_id,
+
+
+content:
+message.content,
+
+
+url:
+message.file_path
+
+
+});
+
+
+});
 
 
 
-                content:
-                message.content,
+}
+catch(error){
 
+console.log(error);
 
-
-                url:
-                message.file_path
-
-
-
-            });
-
-
-
-        });
-
-
-
-    }
-
-    catch(error){
-
-
-        console.log(
-            "History error",
-            error
-        );
-
-
-    }
-
+}
 
 
 }
@@ -511,188 +411,138 @@ async function loadOldMessages(roomId){
 
 
 
-// =====================================
+
+// ===============================
 // DISPLAY MESSAGE
-// =====================================
+// ===============================
 
 
 function displayMessage(data){
 
 
 
-    if(!messageBox){
+const currentUser =
+getCurrentUser();
 
-        return;
 
-    }
 
+if(!currentUser){
 
+return;
 
+}
 
-    const div =
-        document.createElement(
-            "div"
-        );
 
 
+const box =
+document.createElement(
+"div"
+);
 
 
 
-    const user =
-        getCurrentUser();
+const myMessage =
+Number(currentUser.id)
+===
+Number(data.user_id);
 
 
 
 
-    const mine =
-        user &&
-        user.id === data.user_id;
 
+box.className =
+"message " +
+(
+myMessage
+?
+"my-message"
+:
+"other-message"
+);
 
 
 
 
 
 
-    div.className =
-        "message";
+if(data.type==="image"){
 
 
 
+box.innerHTML=`
 
+<img 
+src="${data.url}"
+class="chat-image"
+>
 
+${
 
-    if(mine){
+myMessage
 
+?
 
-        div.classList.add(
-            "my-message"
-        );
+`<span class="ticks">
+✓✓
+</span>`
 
+:
 
-    }
-    else{
+""
 
+}
 
-        div.classList.add(
-            "other-message"
-        );
+`;
 
 
-    }
 
+}
 
+else{
 
 
 
+box.innerHTML=`
 
+<span>
+${escapeHTML(
+data.content || ""
+)}
+</span>
 
 
+${
 
-    let body="";
+myMessage
 
+?
 
+`<span class="ticks">
+✓✓
+</span>`
 
+:
 
+""
 
-    if(data.type==="image"){
+}
 
 
+`;
 
-        body = `
 
 
-        <img
+}
 
-        src="${data.url}"
 
-        class="chat-image"
 
-        >
 
+messageBox.appendChild(box);
 
 
-        `;
 
-
-    }
-
-    else{
-
-
-
-        body = `
-
-
-        <span class="message-text">
-
-        ${escapeHTML(
-            data.content || ""
-        )}
-
-
-        </span>
-
-
-
-        `;
-
-
-
-    }
-
-
-
-
-
-
-
-
-    div.innerHTML =
-
-
-    body +
-
-
-    (
-
-        mine
-
-        ?
-
-        `
-
-        <span class="ticks">
-
-        ✓✓
-
-        </span>
-
-        `
-
-        :
-
-        ""
-
-    );
-
-
-
-
-
-
-
-
-    messageBox.appendChild(
-        div
-    );
-
-
-
-
-
-    messageBox.scrollTop =
-        messageBox.scrollHeight;
+messageBox.scrollTop =
+messageBox.scrollHeight;
 
 
 
@@ -705,30 +555,24 @@ function displayMessage(data){
 
 
 
-
-// =====================================
+// ===============================
 // SECURITY
-// =====================================
+// ===============================
 
 
 function escapeHTML(text){
 
 
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
+const div =
+document.createElement(
+"div"
+);
 
 
-    div.textContent =
-        text;
+div.textContent=text;
 
 
-
-    return div.innerHTML;
-
+return div.innerHTML;
 
 
 }
