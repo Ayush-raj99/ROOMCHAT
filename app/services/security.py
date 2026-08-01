@@ -3,31 +3,45 @@ RoomChat V2
 Security Service
 """
 
-from passlib.context import CryptContext
+import bcrypt
 
 
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto"
-)
 
+# ==============================
+# HASH PASSWORD
+# ==============================
 
 def hash_password(password: str):
 
-    password = password[:72]
+    password_bytes = password.encode("utf-8")
 
-    return pwd_context.hash(password)
+    # bcrypt limit
+    password_bytes = password_bytes[:72]
+
+    hashed = bcrypt.hashpw(
+        password_bytes,
+        bcrypt.gensalt()
+    )
+
+    return hashed.decode("utf-8")
 
 
+
+# ==============================
+# VERIFY PASSWORD
+# ==============================
 
 def verify_password(
     plain_password: str,
     hashed_password: str
 ):
 
-    plain_password = plain_password[:72]
+    password_bytes = plain_password.encode("utf-8")
 
-    return pwd_context.verify(
-        plain_password,
-        hashed_password
+    password_bytes = password_bytes[:72]
+
+
+    return bcrypt.checkpw(
+        password_bytes,
+        hashed_password.encode("utf-8")
     )

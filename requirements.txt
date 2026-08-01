@@ -5,6 +5,5 @@ sqlalchemy
 psycopg2-binary
 python-dotenv
 jinja2
-passlib
 bcrypt
 python-multipart
