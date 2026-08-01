@@ -6,6 +6,5 @@ templates = Jinja2Templates(
 )
 
 
-# Disable Jinja cache issue
-
-templates.env.clear()
+# Disable Jinja template cache
+templates.env.cache = {}
