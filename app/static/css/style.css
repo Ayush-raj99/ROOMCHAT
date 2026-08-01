@@ -1,6 +1,6 @@
 /*
 RoomChat V2
-Main Style
+WhatsApp Style Green Theme
 */
 
 
@@ -12,7 +12,10 @@ Main Style
 
     padding:0;
 
-    font-family:Arial, sans-serif;
+    font-family:
+    "Segoe UI",
+    Arial,
+    sans-serif;
 
 }
 
@@ -20,67 +23,11 @@ Main Style
 
 body{
 
-
-    background:#121212;
+    background:#0b141a;
 
     color:white;
 
-    min-height:100vh;
-
-
-}
-
-
-
-
-/* ==========================
-   CONTAINERS
-========================== */
-
-
-.container{
-
-
-    width:90%;
-
-    max-width:900px;
-
-    margin:50px auto;
-
-    text-align:center;
-
-
-}
-
-
-
-.auth-box{
-
-
-    background:#1e1e1e;
-
-    padding:30px;
-
-    border-radius:15px;
-
-    max-width:400px;
-
-    margin:auto;
-
-
-}
-
-
-
-.admin-container{
-
-
-    width:90%;
-
-    max-width:900px;
-
-    margin:40px auto;
-
+    height:100vh;
 
 }
 
@@ -90,174 +37,7 @@ body{
 
 
 /* ==========================
-   HEADINGS
-========================== */
-
-
-h1{
-
-
-    font-size:40px;
-
-    margin-bottom:10px;
-
-
-}
-
-
-
-h2{
-
-
-    margin-bottom:15px;
-
-
-}
-
-
-
-.subtitle{
-
-
-    color:#aaa;
-
-    margin-bottom:30px;
-
-
-}
-
-
-
-
-
-
-/* ==========================
-   ROOM CARDS
-========================== */
-
-
-.rooms-container{
-
-
-    display:grid;
-
-    grid-template-columns:
-
-    repeat(auto-fit,minmax(220px,1fr));
-
-    gap:20px;
-
-
-}
-
-
-
-.room-card{
-
-
-    background:#1f1f1f;
-
-    padding:25px;
-
-    border-radius:15px;
-
-
-}
-
-
-
-
-
-/* ==========================
-   BUTTONS
-========================== */
-
-
-button{
-
-
-    background:#2563eb;
-
-    color:white;
-
-    border:none;
-
-    padding:12px 25px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
-    margin-top:10px;
-
-
-}
-
-
-
-button:hover{
-
-
-    background:#1d4ed8;
-
-
-}
-
-
-
-.admin-btn{
-
-
-    background:#dc2626;
-
-
-}
-
-
-
-.admin-btn:hover{
-
-
-    background:#b91c1c;
-
-
-}
-
-
-
-
-
-/* ==========================
-   INPUTS
-========================== */
-
-
-input{
-
-
-    width:100%;
-
-    padding:12px;
-
-    margin:8px 0;
-
-    border-radius:8px;
-
-    border:none;
-
-    background:#2b2b2b;
-
-    color:white;
-
-
-}
-
-
-
-
-
-/* ==========================
-   CHAT
+   CHAT CONTAINER
 ========================== */
 
 
@@ -266,13 +46,13 @@ input{
 
     width:95%;
 
-    max-width:800px;
+    max-width:900px;
 
-    height:90vh;
+    height:95vh;
 
     margin:20px auto;
 
-    background:#1b1b1b;
+    background:#111b21;
 
     border-radius:15px;
 
@@ -280,21 +60,46 @@ input{
 
     flex-direction:column;
 
+    overflow:hidden;
+
 
 }
 
 
 
+
+
+
+
+/* ==========================
+   HEADER
+========================== */
+
+
 .chat-header{
 
 
-    padding:20px;
+    background:#075e54;
 
-    border-bottom:1px solid #333;
+    padding:18px;
 
     display:flex;
 
-    justify-content:space-between;
+    align-items:center;
+
+    border-bottom:1px solid #174640;
+
+
+}
+
+
+
+.chat-header h2{
+
+
+    font-size:22px;
+
+    margin-bottom:5px;
 
 
 }
@@ -304,11 +109,22 @@ input{
 #roomStatus{
 
 
-    color:#22c55e;
+    font-size:13px;
+
+    color:#b7e8c7;
 
 
 }
 
+
+
+
+
+
+
+/* ==========================
+   MESSAGE AREA
+========================== */
 
 
 .message-box{
@@ -320,72 +136,15 @@ input{
 
     padding:20px;
 
+    background:
 
-}
+    radial-gradient(
+        circle,
+        #182229 1px,
+        transparent 1px
+    );
 
-
-
-
-.message{
-
-
-    background:#333;
-
-    padding:10px;
-
-    border-radius:10px;
-
-    margin-bottom:10px;
-
-    max-width:70%;
-
-
-}
-
-
-
-.my-message{
-
-
-    background:#2563eb;
-
-    margin-left:auto;
-
-
-}
-
-
-
-.chat-input{
-
-
-    display:flex;
-
-    padding:15px;
-
-    gap:10px;
-
-
-}
-
-
-
-.chat-input input{
-
-
-    flex:1;
-
-
-}
-
-
-
-.file-upload{
-
-
-    padding:15px;
-
-    border-top:1px solid #333;
+    background-size:20px 20px;
 
 
 }
@@ -397,23 +156,354 @@ input{
 
 
 /* ==========================
-   ADMIN
+   MESSAGE BUBBLES
 ========================== */
 
 
-.admin-card{
+.message{
 
 
-    background:#1e1e1e;
+    max-width:70%;
 
-    padding:25px;
+    padding:10px 12px;
 
-    border-radius:15px;
+    margin-bottom:10px;
 
-    margin-bottom:20px;
+    border-radius:10px;
+
+    position:relative;
+
+    word-wrap:break-word;
 
 
 }
+
+
+
+
+/* OTHER USER LEFT */
+
+
+.other-message{
+
+
+    background:#202c33;
+
+    color:white;
+
+    margin-right:auto;
+
+    border-top-left-radius:2px;
+
+
+}
+
+
+
+
+
+
+/* MY MESSAGE RIGHT */
+
+
+.my-message{
+
+
+    background:#005c4b;
+
+    color:white;
+
+    margin-left:auto;
+
+    border-top-right-radius:2px;
+
+
+}
+
+
+
+
+
+
+
+.message p{
+
+
+    font-size:15px;
+
+    line-height:1.4;
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+   TICK PLACE
+========================== */
+
+
+.message-tick{
+
+
+    font-size:12px;
+
+    position:absolute;
+
+    right:7px;
+
+    bottom:4px;
+
+    color:#ffffff;
+
+
+}
+
+
+
+.message-seen{
+
+
+    color:#53bdeb;
+
+
+}
+
+
+
+
+
+
+
+/* ==========================
+   INPUT AREA
+========================== */
+
+
+.chat-input{
+
+
+    background:#202c33;
+
+    padding:10px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+
+}
+
+
+
+
+
+
+.chat-input input{
+
+
+    flex:1;
+
+    background:#2a3942;
+
+    border:none;
+
+    outline:none;
+
+    padding:12px 15px;
+
+    border-radius:25px;
+
+    color:white;
+
+    font-size:15px;
+
+
+}
+
+
+
+
+
+.chat-input input::placeholder{
+
+
+    color:#aebac1;
+
+
+}
+
+
+
+
+
+
+
+/* SEND BUTTON */
+
+
+#sendBtn{
+
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:#00a884;
+
+    color:white;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+
+}
+
+
+
+
+
+
+
+/* ATTACH BUTTON */
+
+
+.attach-btn{
+
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    font-size:22px;
+
+    background:#2a3942;
+
+
+}
+
+
+
+
+
+
+/* ==========================
+   IMAGES
+========================== */
+
+
+.chat-image{
+
+
+    max-width:250px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    display:block;
+
+
+}
+
+
+
+
+
+
+
+.chat-image:hover{
+
+
+    opacity:.85;
+
+
+}
+
+
+
+
+
+
+
+/* ==========================
+   FULL SCREEN IMAGE
+========================== */
+
+
+.image-viewer{
+
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.9);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+
+}
+
+
+
+.image-viewer img{
+
+
+    max-width:95%;
+
+    max-height:90%;
+
+    border-radius:12px;
+
+
+}
+
+
+
+.close-viewer{
+
+
+    position:absolute;
+
+    top:20px;
+
+    right:25px;
+
+    font-size:40px;
+
+    color:white;
+
+}
+
 
 
 
@@ -427,18 +517,30 @@ input{
 @media(max-width:600px){
 
 
-    h1{
+    .chat-container{
 
-        font-size:30px;
+
+        width:100%;
+
+        height:100vh;
+
+        margin:0;
+
+        border-radius:0;
+
 
     }
+
 
 
     .message{
 
+
         max-width:85%;
 
+
     }
+
 
 
 }
