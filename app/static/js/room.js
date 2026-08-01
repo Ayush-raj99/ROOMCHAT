@@ -1,340 +1,210 @@
 /*
 RoomChat V2
+
 Room JavaScript
 
 Handles:
-- Create room
-- Join room
-- Room password verification
+- Joining rooms
+- Saving current user
+- Redirecting to chat
 */
 
 
+document.addEventListener(
 
+    "DOMContentLoaded",
 
+    function(){
 
-// =====================================================
-// CREATE ROOM
-// =====================================================
 
 
-const createRoomForm =
+        const form = document.getElementById(
 
-document.getElementById(
+            "joinRoomForm"
 
-    "createRoomForm"
+        );
 
-);
 
 
+        if(!form){
 
-
-
-if(createRoomForm){
-
-
-    createRoomForm.addEventListener(
-
-        "submit",
-
-        async function(event){
-
-
-            event.preventDefault();
-
-
-
-
-
-            let roomName =
-
-            document.getElementById(
-
-                "roomName"
-
-            ).value;
-
-
-
-
-
-            let password =
-
-            document.getElementById(
-
-                "roomPassword"
-
-            ).value;
-
-
-
-
-
-
-            try{
-
-
-                let response =
-
-                await fetch(
-
-                    "/rooms/",
-
-                    {
-
-
-                        method:"POST",
-
-
-                        headers:{
-
-
-                            "Content-Type":
-
-                            "application/json"
-
-
-                        },
-
-
-                        body:JSON.stringify({
-
-
-                            name:roomName,
-
-
-                            password:password
-
-
-                        })
-
-
-                    }
-
-                );
-
-
-
-
-
-                let room =
-
-                await response.json();
-
-
-
-
-
-
-
-                if(room.id){
-
-
-
-                    showAlert(
-
-                        "Room created"
-
-                    );
-
-
-
-
-
-                    setTimeout(
-
-                        ()=>{
-
-
-                            window.location.href =
-
-                            "/chat/" + room.id;
-
-
-
-                        },
-
-                        1000
-
-                    );
-
-                }
-
-
-
-            }
-
-
-            catch(error){
-
-
-                console.log(error);
-
-
-                showAlert(
-
-                    "Room creation failed",
-
-                    "error"
-
-                );
-
-
-            }
-
-
+            return;
 
         }
 
-    );
 
-}
 
 
-// =====================================================
-// JOIN ROOM
-// =====================================================
 
+        form.addEventListener(
 
-const joinRoomForm =
+            "submit",
 
-document.getElementById(
+            async function(event){
 
-    "joinRoomForm"
 
-);
 
+                event.preventDefault();
 
 
 
 
-if(joinRoomForm){
 
+                const roomId = document.getElementById(
 
-    joinRoomForm.addEventListener(
+                    "roomId"
 
-        "submit",
+                ).value;
 
-        async function(event){
 
 
-            event.preventDefault();
 
 
+                const username = document.getElementById(
 
+                    "username"
 
+                ).value.trim();
 
-            let roomId =
 
-            document.getElementById(
 
-                "roomId"
 
-            ).value;
 
+                const password = document.getElementById(
 
+                    "roomPassword"
 
+                ).value;
 
 
-            let password =
 
-            document.getElementById(
 
-                "roomPassword"
 
-            ).value;
+                if(
 
+                    username === "" ||
 
+                    password === ""
 
+                ){
 
+                    alert(
 
-            let username =
+                        "Enter all details"
 
-            document.getElementById(
+                    );
 
-                "joinUsername"
+                    return;
 
-            ).value;
+                }
 
 
 
 
 
+                try{
 
 
-            try{
 
+                    const response = await fetch(
 
-                let response =
+                        "/rooms/join",
 
-                await fetch(
+                        {
 
-                    "/rooms/join",
 
-                    {
+                            method:"POST",
 
 
-                        method:"POST",
+                            headers:{
 
 
-                        headers:{
+                                "Content-Type":
 
+                                "application/json"
 
-                            "Content-Type":
 
-                            "application/json"
+                            },
 
 
-                        },
+                            body:JSON.stringify({
 
 
-                        body:JSON.stringify({
+                                room_id:Number(roomId),
 
 
-                            room_id:
+                                username:username,
 
-                            Number(roomId),
 
+                                password:password
 
-                            password:
 
+                            })
 
-                            password,
+                        }
 
+                    );
 
-                            username:
 
 
-                            username
 
 
-                        })
+
+
+                    const data = await response.json();
+
+
+
+
+
+
+
+                    if(!response.ok){
+
+
+
+                        alert(
+
+                            data.detail || "Join failed"
+
+                        );
+
+
+                        return;
 
                     }
 
-                );
 
 
 
 
 
 
-                let result =
-
-                await response.json();
+                    const user = {
 
 
+                        id:data.user_id,
+
+
+                        username:data.username,
+
+
+                        room_id:data.room_id
+
+
+                    };
 
 
 
 
 
-                if(response.ok){
 
 
+                    localStorage.setItem(
 
-                    showAlert(
+                        "user",
 
-                        "Entering room..."
+                        JSON.stringify(user)
 
                     );
 
@@ -342,20 +212,29 @@ if(joinRoomForm){
 
 
 
-                    setTimeout(
-
-                        ()=>{
 
 
-                            window.location.href =
+                    window.location.href =
 
-                            "/chat/" + roomId;
+                    `/chat/${data.room_id}`;
 
 
 
-                        },
 
-                        800
+
+                }
+
+                catch(error){
+
+
+
+                    console.error(error);
+
+
+
+                    alert(
+
+                        "Server error"
 
                     );
 
@@ -365,49 +244,14 @@ if(joinRoomForm){
 
 
 
-                else{
-
-
-                    showAlert(
-
-                        result.detail ||
-
-                        "Wrong password",
-
-                        "error"
-
-                    );
-
-
-                }
-
 
 
             }
 
-
-            catch(error){
-
-
-                console.log(error);
-
-
-                showAlert(
-
-                    "Connection error",
-
-                    "error"
-
-                );
-
-
-            }
+        );
 
 
 
+    }
 
-        }
-
-    );
-
-}
+);

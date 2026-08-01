@@ -2,56 +2,37 @@
 RoomChat V2
 Database Models
 
-Tables:
-- User
-- Room
-- Room Member
-- Message
-- Attachment
+Contains:
+- Users
+- Rooms
+- Room Members
+- Messages
 """
 
+from datetime import datetime
 
 from sqlalchemy import (
-
     Column,
-
     Integer,
-
     String,
-
     Text,
-
-    Boolean,
-
     DateTime,
-
-    ForeignKey
-
+    ForeignKey,
+    Boolean
 )
 
 from sqlalchemy.orm import relationship
 
-from datetime import datetime
-
-
 from app.database.database import Base
 
 
-
-
-
-
-
-# =====================================================
-# USER TABLE
-# =====================================================
-
+# ==========================================================
+# USERS TABLE
+# ==========================================================
 
 class User(Base):
 
-
     __tablename__ = "users"
-
 
 
     id = Column(
@@ -65,10 +46,9 @@ class User(Base):
     )
 
 
-
     username = Column(
 
-        String(50),
+        String(100),
 
         unique=True,
 
@@ -77,25 +57,22 @@ class User(Base):
     )
 
 
-
-    display_name = Column(
-
-        String(100),
-
-        nullable=True
-
-    )
-
-
-
-    profile_picture = Column(
+    password = Column(
 
         String(255),
 
-        nullable=True
+        nullable=False
 
     )
 
+
+    role = Column(
+
+        String(20),
+
+        default="user"
+
+    )
 
 
     created_at = Column(
@@ -107,6 +84,15 @@ class User(Base):
     )
 
 
+    rooms = relationship(
+
+        "RoomMember",
+
+        back_populates="user",
+
+        cascade="all, delete"
+
+    )
 
 
     messages = relationship(
@@ -119,19 +105,13 @@ class User(Base):
 
 
 
-
-
-
-# =====================================================
-# ROOM TABLE
-# =====================================================
-
+# ==========================================================
+# ROOMS TABLE
+# ==========================================================
 
 class Room(Base):
 
-
     __tablename__ = "rooms"
-
 
 
     id = Column(
@@ -145,7 +125,6 @@ class Room(Base):
     )
 
 
-
     name = Column(
 
         String(100),
@@ -153,7 +132,6 @@ class Room(Base):
         nullable=False
 
     )
-
 
 
     password = Column(
@@ -165,7 +143,6 @@ class Room(Base):
     )
 
 
-
     created_at = Column(
 
         DateTime,
@@ -174,165 +151,163 @@ class Room(Base):
 
     )
 
+
+    members = relationship(
+
+        "RoomMember",
+
+        back_populates="room",
+
+        cascade="all, delete"
+
+    )
 
 
     messages = relationship(
 
         "Message",
 
-        back_populates="room"
+        back_populates="room",
+
+        cascade="all, delete"
 
     )
 
 
 
-
-
-
-# =====================================================
-# ROOM MEMBERS
-# =====================================================
-
+# ==========================================================
+# ROOM MEMBERS TABLE
+# Controls who can enter which room
+# ==========================================================
 
 class RoomMember(Base):
-
 
     __tablename__ = "room_members"
 
 
-
     id = Column(
 
         Integer,
 
-        primary_key=True
+        primary_key=True,
+
+        index=True
 
     )
-
 
 
     room_id = Column(
 
         Integer,
 
-        ForeignKey(
-
-            "rooms.id"
-
-        )
-
-    )
-
-
-
-    user_id = Column(
-
-        Integer,
-
-        ForeignKey(
-
-            "users.id"
-
-        )
-
-    )
-
-
-
-    online = Column(
-
-        Boolean,
-
-        default=True
-
-    )
-
-
-
-
-
-
-# =====================================================
-# MESSAGE TABLE
-# =====================================================
-
-
-class Message(Base):
-
-
-    __tablename__ = "messages"
-
-
-
-    id = Column(
-
-        Integer,
-
-        primary_key=True
-
-    )
-
-
-
-    room_id = Column(
-
-        Integer,
-
-        ForeignKey(
-
-            "rooms.id"
-
-        )
-
-    )
-
-
-
-    user_id = Column(
-
-        Integer,
-
-        ForeignKey(
-
-            "users.id"
-
-        )
-
-    )
-
-
-
-    content = Column(
-
-        Text,
+        ForeignKey("rooms.id"),
 
         nullable=False
 
     )
 
 
+    user_id = Column(
 
-    message_type = Column(
+        Integer,
 
-        String(30),
+        ForeignKey("users.id"),
 
-        default="text"
+        nullable=False
+
+    )
+
+
+    room = relationship(
+
+        "Room",
+
+        back_populates="members"
+
+    )
+
+
+    user = relationship(
+
+        "User",
+
+        back_populates="rooms"
 
     )
 
 
 
-    created_at = Column(
+# ==========================================================
+# MESSAGES TABLE
+# Supports text + file uploads
+# ==========================================================
 
-        DateTime,
+class Message(Base):
 
-        default=datetime.utcnow
+    __tablename__ = "messages"
+
+
+    id = Column(
+
+        Integer,
+
+        primary_key=True,
+
+        index=True
 
     )
 
 
+    room_id = Column(
 
-    seen = Column(
+        Integer,
+
+        ForeignKey("rooms.id"),
+
+        nullable=False
+
+    )
+
+
+    user_id = Column(
+
+        Integer,
+
+        ForeignKey("users.id"),
+
+        nullable=False
+
+    )
+
+
+    content = Column(
+
+        Text,
+
+        nullable=True
+
+    )
+
+
+    file_name = Column(
+
+        String(255),
+
+        nullable=True
+
+    )
+
+
+    file_path = Column(
+
+        String(500),
+
+        nullable=True
+
+    )
+
+
+    is_image = Column(
 
         Boolean,
 
@@ -341,7 +316,13 @@ class Message(Base):
     )
 
 
+    created_at = Column(
 
+        DateTime,
+
+        default=datetime.utcnow
+
+    )
 
 
     room = relationship(
@@ -353,78 +334,10 @@ class Message(Base):
     )
 
 
-
     user = relationship(
 
         "User",
 
         back_populates="messages"
-
-    )
-
-
-
-
-
-
-
-
-# =====================================================
-# ATTACHMENT TABLE
-# =====================================================
-
-
-class Attachment(Base):
-
-
-    __tablename__ = "attachments"
-
-
-
-    id = Column(
-
-        Integer,
-
-        primary_key=True
-
-    )
-
-
-
-    message_id = Column(
-
-        Integer,
-
-        ForeignKey(
-
-            "messages.id"
-
-        )
-
-    )
-
-
-
-    file_url = Column(
-
-        String(255)
-
-    )
-
-
-
-    file_type = Column(
-
-        String(50)
-
-    )
-
-
-
-    uploaded_at = Column(
-
-        DateTime,
-
-        default=datetime.utcnow
 
     )

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+<head>
+
+
+    <meta charset="UTF-8">
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>
+
+        Admin Dashboard
+
+    </title>
+
+
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="admin-container">
+
+
+
+
+
+    <h1>
+
+        Admin Dashboard
+
+    </h1>
+
+
+
+
+
+    <!-- CREATE USER -->
+
+    <section class="admin-card">
+
+
+
+        <h2>
+
+            Create User
+
+        </h2>
+
+
+
+
+        <input
+
+            id="newUsername"
+
+            placeholder="Username"
+
+        >
+
+
+
+        <input
+
+            id="newUserPassword"
+
+            type="password"
+
+            placeholder="Password"
+
+        >
+
+
+
+        <button id="createUserBtn">
+
+
+            Create User
+
+
+        </button>
+
+
+
+    </section>
+
+
+
+
+
+
+
+    <!-- CREATE ROOM -->
+
+    <section class="admin-card">
+
+
+
+        <h2>
+
+            Create Room
+
+        </h2>
+
+
+
+
+
+        <input
+
+            id="newRoomName"
+
+            placeholder="Room Name"
+
+        >
+
+
+
+
+        <input
+
+            id="newRoomPassword"
+
+            type="password"
+
+            placeholder="Room Password"
+
+        >
+
+
+
+
+        <button id="createRoomBtn">
+
+
+            Create Room
+
+
+        </button>
+
+
+
+
+    </section>
+
+
+
+
+
+
+
+
+    <!-- ASSIGN USER -->
+
+    <section class="admin-card">
+
+
+
+        <h2>
+
+            Assign User To Room
+
+        </h2>
+
+
+
+
+
+
+        <input
+
+            id="assignUserId"
+
+            placeholder="User ID"
+
+        >
+
+
+
+
+
+        <input
+
+            id="assignRoomId"
+
+            placeholder="Room ID"
+
+        >
+
+
+
+
+
+        <button id="assignBtn">
+
+
+            Assign
+
+
+        </button>
+
+
+
+
+
+    </section>
+
+
+
+
+
+
+
+
+
+    <!-- CHANGE PASSWORD -->
+
+    <section class="admin-card">
+
+
+
+        <h2>
+
+            Change Room Password
+
+        </h2>
+
+
+
+
+
+        <input
+
+            id="changeRoomId"
+
+            placeholder="Room ID"
+
+        >
+
+
+
+
+
+        <input
+
+            id="changePassword"
+
+            placeholder="New Password"
+
+        >
+
+
+
+
+
+        <button id="changePasswordBtn">
+
+
+            Change Password
+
+
+        </button>
+
+
+
+
+
+    </section>
+
+
+
+
+
+
+
+
+
+    <!-- DELETE ROOM -->
+
+    <section class="admin-card">
+
+
+
+        <h2>
+
+            Delete Room
+
+        </h2>
+
+
+
+
+
+
+        <input
+
+            id="deleteRoomId"
+
+            placeholder="Room ID"
+
+        >
+
+
+
+
+
+        <button id="deleteRoomBtn">
+
+
+            Delete Room
+
+
+        </button>
+
+
+
+
+    </section>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+<script src="/static/js/admin.js"></script>
+
+
+
+
+</body>
+
+
+</html>

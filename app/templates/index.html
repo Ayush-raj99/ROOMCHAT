@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -7,7 +8,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>RoomChat</title>
+    <title>RoomChat V2</title>
 
 
     <link rel="stylesheet" href="/static/css/style.css">
@@ -18,143 +19,105 @@
 <body>
 
 
-<header class="navbar">
+<div class="container">
 
-    <div class="logo">
+
+    <h1>
         RoomChat
-    </div>
+    </h1>
 
 
-    <div class="nav-buttons">
-
-        <a href="/login">
-            Login
-        </a>
-
-        <a href="/create-room">
-            Create Room
-        </a>
-
-    </div>
-
-</header>
-
-
-
-
-
-<section class="hero">
-
-
-    <div class="hero-content">
-
-
-        <h1>
-            Connect. Chat. Collaborate.
-        </h1>
-
-
-        <p>
-            Private rooms with secure passwords,
-            real-time messaging and file sharing.
-        </p>
-
-
-
-        <div class="hero-buttons">
-
-
-            <a class="primary-btn" href="/create-room">
-
-                Create Room
-
-            </a>
-
-
-
-            <a class="secondary-btn" href="/join-room">
-
-                Join Room
-
-            </a>
-
-
-        </div>
-
-
-    </div>
-
-
-
-</section>
-
-
-
-
-
-<section class="features">
-
-
-    <div class="feature-card">
-
-        <h2>
-            🔒 Private Rooms
-        </h2>
-
-        <p>
-            Every room has its own password protection.
-        </p>
-
-    </div>
-
-
-
-
-    <div class="feature-card">
-
-        <h2>
-            ⚡ Real Time
-        </h2>
-
-        <p>
-            Messages appear instantly using WebSockets.
-        </p>
-
-    </div>
-
-
-
-
-
-    <div class="feature-card">
-
-        <h2>
-            📎 File Sharing
-        </h2>
-
-        <p>
-            Share images, documents and files easily.
-        </p>
-
-    </div>
-
-
-
-</section>
-
-
-
-
-
-<footer>
-
-    <p>
-        © 2026 RoomChat
+    <p class="subtitle">
+        Select a room to join
     </p>
 
-</footer>
 
 
+    <div class="rooms-container">
+
+
+
+        {% if rooms %}
+
+
+
+            {% for room in rooms %}
+
+
+
+            <div class="room-card">
+
+
+                <h2>
+
+                    {{ room.name }}
+
+                </h2>
+
+
+
+                <a href="/rooms/join/{{ room.id }}">
+
+                    <button>
+
+                        Join Room
+
+                    </button>
+
+                </a>
+
+
+            </div>
+
+
+
+            {% endfor %}
+
+
+
+        {% else %}
+
+
+
+            <p>
+
+                No rooms available
+
+            </p>
+
+
+
+        {% endif %}
+
+
+
+    </div>
+
+
+
+
+
+    <div class="admin-box">
+
+
+        <a href="/admin/login">
+
+
+            <button class="admin-btn">
+
+                Admin Panel
+
+            </button>
+
+
+        </a>
+
+
+    </div>
+
+
+
+</div>
 
 
 
@@ -162,5 +125,6 @@
 
 
 </body>
+
 
 </html>

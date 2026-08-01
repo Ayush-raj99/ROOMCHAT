@@ -1,23 +1,35 @@
 """
 RoomChat V2
-Real-time Chat WebSocket
+Chat WebSocket
+
+Handles:
+- Real time text messages
+- File messages
+- Broadcasting
 """
+
 
 import json
 
-from fastapi import (
-    WebSocket,
-    WebSocketDisconnect
-)
 
-from sqlalchemy.orm import Session
+from fastapi import APIRouter
+from fastapi import WebSocket
+from fastapi import WebSocketDisconnect
+
 
 
 from app.websocket.connection_manager import manager
 
+
 from app.database.database import SessionLocal
 
+
 from app.services.chat_service import create_message
+
+
+
+
+router = APIRouter()
 
 
 
@@ -26,6 +38,9 @@ from app.services.chat_service import create_message
 # ==========================================================
 # CHAT SOCKET
 # ==========================================================
+
+
+@router.websocket("/ws/{room_id}/{user_id}")
 
 async def chat_socket(
 
@@ -37,7 +52,9 @@ async def chat_socket(
 
 ):
 
-    db: Session = SessionLocal()
+
+    db = SessionLocal()
+
 
 
     await manager.connect(
@@ -49,12 +66,16 @@ async def chat_socket(
     )
 
 
+
     try:
+
 
         while True:
 
 
+
             data = await websocket.receive_text()
+
 
 
             message_data = json.loads(
@@ -64,59 +85,177 @@ async def chat_socket(
             )
 
 
-            content = message_data.get(
 
-                "content"
+            message_type = message_data.get(
 
-            )
+                "type",
 
-
-
-            # Save message
-
-            message = create_message(
-
-                db,
-
-                room_id,
-
-                user_id,
-
-                content
+                "text"
 
             )
 
 
 
-            response = {
+            # ==============================
+            # TEXT MESSAGE
+            # ==============================
 
-                "id": message.id,
 
-                "room_id": room_id,
-
-                "user_id": user_id,
-
-                "content": content,
-
-                "type": "message"
-
-            }
+            if message_type == "text":
 
 
 
-            # Send to everyone in room
+                content = message_data.get(
 
-            await manager.broadcast(
+                    "content"
 
-                json.dumps(response),
+                )
 
-                room_id
 
-            )
+
+                if not content:
+
+                    continue
+
+
+
+
+
+                message = create_message(
+
+                    db,
+
+                    room_id,
+
+                    user_id,
+
+                    content=content
+
+                )
+
+
+
+
+
+
+
+                response = {
+
+
+                    "type":"text",
+
+
+                    "user_id":user_id,
+
+
+                    "content":content,
+
+
+                    "message_id":message.id
+
+
+                }
+
+
+
+
+
+                await manager.broadcast(
+
+                    json.dumps(response),
+
+                    room_id
+
+                )
+
+
+
+
+
+
+
+
+            # ==============================
+            # IMAGE MESSAGE
+            # ==============================
+
+
+            elif message_type == "image":
+
+
+
+
+                image_url = message_data.get(
+
+                    "url"
+
+                )
+
+
+
+
+                if not image_url:
+
+                    continue
+
+
+
+
+
+                message = create_message(
+
+                    db,
+
+                    room_id,
+
+                    user_id,
+
+                    file_path=image_url,
+
+                    is_image=True
+
+                )
+
+
+
+
+
+
+                response = {
+
+
+                    "type":"image",
+
+
+                    "user_id":user_id,
+
+
+                    "url":image_url,
+
+
+                    "message_id":message.id
+
+
+                }
+
+
+
+
+
+                await manager.broadcast(
+
+                    json.dumps(response),
+
+                    room_id
+
+                )
+
+
 
 
 
     except WebSocketDisconnect:
+
 
 
         manager.disconnect(
@@ -128,6 +267,9 @@ async def chat_socket(
         )
 
 
+
+
     finally:
+
 
         db.close()

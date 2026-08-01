@@ -1,15 +1,18 @@
 """
 RoomChat V2
-Security Utilities
+Security Service
+
+Handles:
+- Password hashing
+- Password verification
 """
 
 from passlib.context import CryptContext
 
 
-
-# ==========================================
-# PASSWORD HASHER
-# ==========================================
+# ==========================================================
+# PASSWORD ENGINE
+# ==========================================================
 
 pwd_context = CryptContext(
 
@@ -21,29 +24,19 @@ pwd_context = CryptContext(
 
 
 
-# ==========================================
+# ==========================================================
 # HASH PASSWORD
-# ==========================================
+# ==========================================================
 
-def hash_password(
+def hash_password(password: str):
 
-    password: str
-
-) -> str:
-
-    return pwd_context.hash(
-
-        password
-
-    )
+    return pwd_context.hash(password)
 
 
 
-
-
-# ==========================================
+# ==========================================================
 # VERIFY PASSWORD
-# ==========================================
+# ==========================================================
 
 def verify_password(
 
@@ -51,7 +44,7 @@ def verify_password(
 
     hashed_password: str
 
-) -> bool:
+):
 
     return pwd_context.verify(
 

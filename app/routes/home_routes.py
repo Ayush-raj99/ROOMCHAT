@@ -1,25 +1,39 @@
 """
 RoomChat V2
-Home Page Routes
+Home Routes
+
+Handles:
+- Main website page
+- Showing available rooms
 """
 
-from fastapi import APIRouter, Request
 
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter
+from fastapi import Request
+from fastapi import Depends
 
 from fastapi.templating import Jinja2Templates
 
+from sqlalchemy.orm import Session
+
+
+from app.database.database import get_db
+
+from app.services.room_service import get_all_rooms
 
 
 
+# ==========================================================
+# ROUTER
+# ==========================================================
 
-router = APIRouter(
-
-    tags=["Home"]
-
-)
+router = APIRouter()
 
 
+
+# ==========================================================
+# TEMPLATE LOCATION
+# ==========================================================
 
 templates = Jinja2Templates(
 
@@ -29,25 +43,27 @@ templates = Jinja2Templates(
 
 
 
-
-
 # ==========================================================
 # HOME PAGE
 # ==========================================================
 
-@router.get(
+@router.get("/")
 
-    "/",
+def home(
 
-    response_class=HTMLResponse
+    request: Request,
 
-)
-
-async def home(
-
-    request: Request
+    db: Session = Depends(get_db)
 
 ):
+
+
+    rooms = get_all_rooms(
+
+        db
+
+    )
+
 
     return templates.TemplateResponse(
 
@@ -55,147 +71,9 @@ async def home(
 
         {
 
-            "request": request
-
-        }
-
-    )
-
-
-
-
-
-# ==========================================================
-# LOGIN PAGE
-# ==========================================================
-
-@router.get(
-
-    "/login",
-
-    response_class=HTMLResponse
-
-)
-
-async def login_page(
-
-    request: Request
-
-):
-
-    return templates.TemplateResponse(
-
-        "login.html",
-
-        {
-
-            "request": request
-
-        }
-
-    )
-
-
-
-
-
-# ==========================================================
-# CREATE ROOM PAGE
-# ==========================================================
-
-@router.get(
-
-    "/create-room",
-
-    response_class=HTMLResponse
-
-)
-
-async def create_room_page(
-
-    request: Request
-
-):
-
-    return templates.TemplateResponse(
-
-        "create_room.html",
-
-        {
-
-            "request": request
-
-        }
-
-    )
-
-
-
-
-
-# ==========================================================
-# JOIN ROOM PAGE
-# ==========================================================
-
-@router.get(
-
-    "/join-room",
-
-    response_class=HTMLResponse
-
-)
-
-async def join_room_page(
-
-    request: Request
-
-):
-
-    return templates.TemplateResponse(
-
-        "join_room.html",
-
-        {
-
-            "request": request
-
-        }
-
-    )
-
-
-
-
-
-# ==========================================================
-# CHAT PAGE
-# ==========================================================
-
-@router.get(
-
-    "/chat/{room_id}",
-
-    response_class=HTMLResponse
-
-)
-
-async def chat_page(
-
-    request: Request,
-
-    room_id: int
-
-):
-
-    return templates.TemplateResponse(
-
-        "chat.html",
-
-        {
-
             "request": request,
 
-            "room_id": room_id
+            "rooms": rooms
 
         }
 

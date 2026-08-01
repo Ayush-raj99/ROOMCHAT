@@ -1,37 +1,48 @@
 """
 RoomChat V2
-Main FastAPI Application
+
+Main Application
+
+Features:
+- Rooms
+- Users
+- Admin panel
+- Chat
+- WebSocket
+- File upload
 """
 
 
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI
 
 from fastapi.staticfiles import StaticFiles
 
 from fastapi.middleware.cors import CORSMiddleware
 
 
-from app.database.database import Base, engine
-
-
-from app.routes import (
-    home_routes,
-    user_routes,
-    room_routes,
-    chat_routes,
-    upload_routes
-)
-
-
-from app.websocket.chat_socket import chat_socket
+from app.database.database import Base
+from app.database.database import engine
 
 
 
+from app.routes import home_routes
+from app.routes import room_routes
+from app.routes import admin_routes
+from app.routes import chat_routes
+from app.routes import upload_routes
 
 
-# =====================================================
+
+from app.websocket import chat_socket
+
+
+
+
+
+# ==================================================
 # DATABASE TABLE CREATION
-# =====================================================
+# ==================================================
+
 
 Base.metadata.create_all(
 
@@ -43,17 +54,16 @@ Base.metadata.create_all(
 
 
 
-# =====================================================
+
+
+# ==================================================
 # FASTAPI APP
-# =====================================================
+# ==================================================
+
 
 app = FastAPI(
 
-    title="RoomChat",
-
-    description="Real-time private chat platform",
-
-    version="2.0"
+    title="RoomChat V2"
 
 )
 
@@ -61,21 +71,28 @@ app = FastAPI(
 
 
 
-# =====================================================
+
+
+# ==================================================
 # CORS
-# =====================================================
+# ==================================================
+
 
 app.add_middleware(
 
     CORSMiddleware,
 
+
     allow_origins=["*"],
+
 
     allow_credentials=True,
 
+
     allow_methods=["*"],
 
-    allow_headers=["*"],
+
+    allow_headers=["*"]
 
 )
 
@@ -83,9 +100,12 @@ app.add_middleware(
 
 
 
-# =====================================================
+
+
+# ==================================================
 # STATIC FILES
-# =====================================================
+# ==================================================
+
 
 app.mount(
 
@@ -101,6 +121,16 @@ app.mount(
 
 )
 
+
+
+
+
+
+
+
+# ==================================================
+# UPLOADED FILES
+# ==================================================
 
 
 app.mount(
@@ -121,9 +151,14 @@ app.mount(
 
 
 
-# =====================================================
-# HTML ROUTES
-# =====================================================
+
+
+
+
+# ==================================================
+# NORMAL ROUTES
+# ==================================================
+
 
 app.include_router(
 
@@ -133,19 +168,6 @@ app.include_router(
 
 
 
-
-
-# =====================================================
-# API ROUTES
-# =====================================================
-
-app.include_router(
-
-    user_routes.router
-
-)
-
-
 app.include_router(
 
     room_routes.router
@@ -153,11 +175,21 @@ app.include_router(
 )
 
 
+
+app.include_router(
+
+    admin_routes.router
+
+)
+
+
+
 app.include_router(
 
     chat_routes.router
 
 )
+
 
 
 app.include_router(
@@ -170,56 +202,45 @@ app.include_router(
 
 
 
-# =====================================================
-# WEBSOCKET CHAT
-# =====================================================
 
-@app.websocket(
 
-    "/ws/{room_id}/{user_id}"
+
+# ==================================================
+# WEBSOCKET
+# ==================================================
+
+
+app.include_router(
+
+    chat_socket.router
 
 )
 
-async def websocket_endpoint(
-
-    websocket: WebSocket,
-
-    room_id: int,
-
-    user_id: int
-
-):
-
-
-    await chat_socket(
-
-        websocket,
-
-        room_id,
-
-        user_id
-
-    )
 
 
 
 
 
-# =====================================================
-# HEALTH CHECK
-# =====================================================
 
-@app.get("/api/status")
 
-def status():
+
+# ==================================================
+# TEST ROUTE
+# ==================================================
+
+
+@app.get("/test")
+
+def test():
 
 
     return {
 
-        "status": "running",
 
-        "project": "RoomChat",
+        "status":
 
-        "version": "2.0"
+        "RoomChat V2 running"
+
+
 
     }

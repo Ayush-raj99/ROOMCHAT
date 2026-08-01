@@ -1,19 +1,27 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 
 <head>
 
+
     <meta charset="UTF-8">
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
     <title>
-        Chat - RoomChat
+
+        {{ room.name }}
+
     </title>
 
 
+
     <link rel="stylesheet" href="/static/css/style.css">
+
 
 </head>
 
@@ -22,62 +30,35 @@
 <body>
 
 
+
+
 <div class="chat-container">
 
 
 
-    <!-- Header -->
-
-    <header class="chat-header">
 
 
-        <div>
-
-            <h2>
-                RoomChat
-            </h2>
-
-
-            <p id="roomStatus">
-
-                Connecting...
-
-            </p>
-
-        </div>
+    <div class="chat-header">
 
 
 
-        <div>
+        <h2>
 
-            <span id="onlineCount">
+            {{ room.name }}
 
-                0 Online
-
-            </span>
-
-        </div>
-
-
-    </header>
+        </h2>
 
 
 
+        <span id="roomStatus">
+
+            Connecting...
+
+        </span>
 
 
 
-    <!-- Messages -->
-
-    <main
-
-        id="messageBox"
-
-        class="message-box"
-
-    >
-
-
-    </main>
+    </div>
 
 
 
@@ -85,49 +66,34 @@
 
 
 
-    <!-- Input Area -->
-
-    <footer class="chat-input-area">
+    <div id="messageBox" class="message-box">
 
 
 
-        <input
-
-            type="file"
-
-            id="fileInput"
-
-            hidden
-
-        >
+    </div>
 
 
 
 
 
-        <button
 
-            id="uploadBtn"
 
-            class="icon-btn"
-
-        >
-
-            📎
-
-        </button>
+    <div class="chat-input">
 
 
 
 
 
         <input
+
 
             type="text"
 
+
             id="messageInput"
 
-            placeholder="Type message..."
+
+            placeholder="Type a message..."
 
         >
 
@@ -135,21 +101,58 @@
 
 
 
-        <button
+        <button id="sendBtn">
 
-            id="sendBtn"
-
-            class="primary-btn"
-
-        >
 
             Send
+
 
         </button>
 
 
 
-    </footer>
+
+
+    </div>
+
+
+
+
+
+
+
+    <div class="file-upload">
+
+
+
+        <input
+
+
+            type="file"
+
+
+            id="fileInput"
+
+
+        >
+
+
+
+
+        <button id="uploadBtn">
+
+
+            Upload
+
+
+        </button>
+
+
+
+
+    </div>
+
+
 
 
 
@@ -159,25 +162,22 @@
 
 
 
-
 <script>
 
-    const ROOM_ID = "{{ room_id }}";
+
+const ROOM_ID = "{{ room.id }}";
+
 
 </script>
 
 
 
 
-
-<script src="/static/js/main.js"></script>
-
 <script src="/static/js/chat.js"></script>
-
-<script src="/static/js/upload.js"></script>
 
 
 
 </body>
+
 
 </html>

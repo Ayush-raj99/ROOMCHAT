@@ -1,19 +1,27 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 
 <head>
 
+
     <meta charset="UTF-8">
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
     <title>
-        Join Room - RoomChat
+
+        Join Room
+
     </title>
 
 
+
     <link rel="stylesheet" href="/static/css/style.css">
+
 
 </head>
 
@@ -22,21 +30,28 @@
 <body>
 
 
-<div class="auth-container">
+
+<div class="container">
 
 
-    <div class="auth-card">
+
+    <div class="auth-box">
+
 
 
         <h1>
-            Join Private Room
+
+            {{ room.name }}
+
         </h1>
 
 
-        <p>
-            Enter room details to continue
-        </p>
 
+        <p>
+
+            Enter your details to join
+
+        </p>
 
 
 
@@ -45,33 +60,32 @@
 
 
 
-
-
-            <label>
-                Room ID
-            </label>
-
-
             <input
 
-                type="number"
+                type="hidden"
 
                 id="roomId"
 
-                placeholder="Enter room ID"
-
-                required
+                value="{{ room.id }}"
 
             >
 
 
 
 
+            <input
+
+                type="text"
+
+                id="username"
+
+                placeholder="Username"
+
+                required
+
+            >
 
 
-            <label>
-                Room Password
-            </label>
 
 
             <input
@@ -80,7 +94,7 @@
 
                 id="roomPassword"
 
-                placeholder="Enter room password"
+                placeholder="Room Password"
 
                 required
 
@@ -90,39 +104,14 @@
 
 
 
-            <label>
-                Username
-            </label>
+            <button type="submit">
 
 
-            <input
+                Join Chat
 
-                type="text"
-
-                id="joinUsername"
-
-                placeholder="Your username"
-
-                required
-
-            >
-
-
-
-
-
-
-            <button
-
-                type="submit"
-
-                class="primary-btn"
-
-            >
-
-                Join Room
 
             </button>
+
 
 
 
@@ -131,18 +120,9 @@
 
 
 
-
-        <p class="back-link">
-
-            <a href="/">
-                Back to Home
-            </a>
-
-        </p>
-
-
-
     </div>
+
+
 
 
 </div>
@@ -150,13 +130,11 @@
 
 
 
-
-<script src="/static/js/main.js"></script>
-
 <script src="/static/js/room.js"></script>
 
 
 
 </body>
+
 
 </html>

@@ -3,54 +3,45 @@ RoomChat V2
 Room Routes
 
 Handles:
-- Create room
-- Get rooms
-- Join room
+- Room creation
+- Join room page
+- Room access verification
 """
 
 
-from fastapi import (
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import Request
+from fastapi import HTTPException
 
-    APIRouter,
-
-    Depends,
-
-    HTTPException
-
-)
+from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
 
+from pydantic import BaseModel
 
 
 from app.database.database import get_db
 
 
+from app.models.models import User
 from app.models.models import Room
 
 
-from app.schemas.room_schema import (
-
-    RoomCreate,
-
-    RoomResponse,
-
-    RoomJoin
-
-)
+from app.services.security import verify_password
 
 
 from app.services.room_service import (
-
     create_room,
-
-    get_all_rooms
-
+    get_room,
+    user_can_access_room
 )
 
 
 
-
+# ==========================================================
+# ROUTER
+# ==========================================================
 
 router = APIRouter(
 
@@ -62,7 +53,33 @@ router = APIRouter(
 
 
 
+templates = Jinja2Templates(
 
+    directory="app/templates"
+
+)
+
+
+
+# ==========================================================
+# SCHEMAS
+# ==========================================================
+
+class RoomCreate(BaseModel):
+
+    name: str
+
+    password: str
+
+
+
+class RoomJoin(BaseModel):
+
+    room_id: int
+
+    username: str
+
+    password: str
 
 
 
@@ -70,14 +87,7 @@ router = APIRouter(
 # CREATE ROOM
 # ==========================================================
 
-
-@router.post(
-
-    "/",
-
-    response_model=RoomResponse
-
-)
+@router.post("/")
 
 def create_new_room(
 
@@ -99,78 +109,43 @@ def create_new_room(
     )
 
 
-    return room
+    return {
 
+        "id": room.id,
 
+        "name": room.name
 
-
+    }
 
 
 
 # ==========================================================
-# GET ALL ROOMS
+# JOIN PAGE
 # ==========================================================
 
+@router.get("/join/{room_id}")
 
-@router.get(
+def join_room_page(
 
-    "/",
+    request: Request,
 
-    response_model=list[RoomResponse]
-
-)
-
-def list_rooms(
+    room_id: int,
 
     db: Session = Depends(get_db)
 
 ):
 
 
-    return get_all_rooms(
+    room = get_room(
 
-        db
+        db,
+
+        room_id
 
     )
 
 
-
-
-
-
-
-# ==========================================================
-# JOIN ROOM
-# ==========================================================
-
-
-@router.post(
-
-    "/join"
-
-)
-
-def join_room(
-
-    data: RoomJoin,
-
-    db: Session = Depends(get_db)
-
-):
-
-
-    room = db.query(Room).filter(
-
-        Room.id == data.room_id
-
-    ).first()
-
-
-
-
-
     if not room:
-
 
         raise HTTPException(
 
@@ -182,47 +157,134 @@ def join_room(
 
 
 
+    return templates.TemplateResponse(
+
+        "join_room.html",
+
+        {
+
+            "request": request,
+
+            "room": room
+
+        }
+
+    )
 
 
 
+# ==========================================================
+# VERIFY JOIN
+# ==========================================================
 
-    if room.password != data.password:
+@router.post("/join")
 
+def join_room(
+
+    data: RoomJoin,
+
+    db: Session = Depends(get_db)
+
+):
+
+
+    room = get_room(
+
+        db,
+
+        data.room_id
+
+    )
+
+
+    if not room:
 
         raise HTTPException(
 
-            status_code=401,
+            status_code=404,
 
-            detail="Wrong password"
+            detail="Room not found"
 
         )
 
 
 
+    # Check room password
+
+    if not verify_password(
+
+        data.password,
+
+        room.password
+
+    ):
+
+        raise HTTPException(
+
+            status_code=401,
+
+            detail="Wrong room password"
+
+        )
+
+
+
+    # Find user
+
+    user = db.query(User).filter(
+
+        User.username == data.username
+
+    ).first()
+
+
+
+    if not user:
+
+        raise HTTPException(
+
+            status_code=404,
+
+            detail="User not found"
+
+        )
+
+
+
+    # Check permission
+
+    if not user_can_access_room(
+
+        db,
+
+        user.id,
+
+        room.id
+
+    ):
+
+        raise HTTPException(
+
+            status_code=403,
+
+            detail="You are not allowed in this room"
+
+        )
 
 
 
     return {
 
 
-        "message":
-
-        "Joined successfully",
+        "message":"Joined successfully",
 
 
-        "room_id":
-
-        room.id,
+        "user_id":user.id,
 
 
-        "room_name":
-
-        room.name,
+        "username":user.username,
 
 
-        "username":
-
-        data.username
-
+        "room_id":room.id
 
     }

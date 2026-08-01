@@ -1,7 +1,13 @@
 """
 RoomChat V2
 WebSocket Connection Manager
+
+Handles:
+- Active users
+- Room connections
+- Broadcasting messages
 """
+
 
 from typing import Dict, List
 
@@ -9,6 +15,9 @@ from fastapi import WebSocket
 
 
 
+# ==========================================================
+# CONNECTION MANAGER
+# ==========================================================
 
 
 class ConnectionManager:
@@ -16,12 +25,14 @@ class ConnectionManager:
 
     def __init__(self):
 
-        self.active_connections: Dict[
+
+        self.connections: Dict[
+
             int,
+
             List[WebSocket]
+
         ] = {}
-
-
 
 
 
@@ -35,25 +46,27 @@ class ConnectionManager:
 
         websocket: WebSocket,
 
-        room_id: int
+        room_id:int
 
     ):
+
 
         await websocket.accept()
 
 
-        if room_id not in self.active_connections:
 
-            self.active_connections[room_id] = []
+        if room_id not in self.connections:
 
 
-        self.active_connections[room_id].append(
+            self.connections[room_id] = []
+
+
+
+        self.connections[room_id].append(
 
             websocket
 
         )
-
-
 
 
 
@@ -65,51 +78,57 @@ class ConnectionManager:
 
         self,
 
-        websocket: WebSocket,
+        websocket:WebSocket,
 
-        room_id: int
+        room_id:int
 
     ):
 
-        if room_id in self.active_connections:
 
-            if websocket in self.active_connections[room_id]:
+        if room_id in self.connections:
 
-                self.active_connections[room_id].remove(
+
+            if websocket in self.connections[room_id]:
+
+
+                self.connections[room_id].remove(
 
                     websocket
 
                 )
 
 
-            if not self.active_connections[room_id]:
 
-                del self.active_connections[room_id]
+            if len(self.connections[room_id]) == 0:
 
 
+                del self.connections[room_id]
 
 
 
     # ======================================================
-    # SEND TO ONE ROOM
+    # SEND MESSAGE TO ROOM
     # ======================================================
 
     async def broadcast(
 
         self,
 
-        message: str,
+        message:str,
 
-        room_id: int
+        room_id:int
 
     ):
 
-        if room_id not in self.active_connections:
+
+        if room_id not in self.connections:
 
             return
 
 
-        for connection in self.active_connections[room_id]:
+
+        for connection in self.connections[room_id]:
+
 
             await connection.send_text(
 
@@ -119,8 +138,8 @@ class ConnectionManager:
 
 
 
-
-
-# Global manager
+# ==========================================================
+# GLOBAL OBJECT
+# ==========================================================
 
 manager = ConnectionManager()

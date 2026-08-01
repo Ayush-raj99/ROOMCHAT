@@ -3,42 +3,47 @@ RoomChat V2
 Chat Routes
 
 Handles:
-- Opening chat room page
-- Getting room messages
+- Chat page
+- Message history
 """
 
 
-from fastapi import (
-
-    APIRouter,
-
-    Depends,
-
-    Request,
-
-    HTTPException
-
-)
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import Request
+from fastapi import HTTPException
 
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
 
 
-
 from app.database.database import get_db
 
-from app.models.models import Room, Message
+
+from app.services.room_service import get_room
+
+from app.services.chat_service import get_room_messages
 
 
+
+# ==========================================================
+# ROUTER
+# ==========================================================
 
 router = APIRouter(
+
+    prefix="/chat",
 
     tags=["Chat"]
 
 )
 
 
+
+# ==========================================================
+# TEMPLATE
+# ==========================================================
 
 templates = Jinja2Templates(
 
@@ -48,18 +53,13 @@ templates = Jinja2Templates(
 
 
 
-
-
-
-
-# =====================================================
+# ==========================================================
 # OPEN CHAT ROOM
-# =====================================================
+# ==========================================================
 
+@router.get("/{room_id}")
 
-@router.get("/chat/{room_id}")
-
-def open_chat_room(
+def open_chat(
 
     request: Request,
 
@@ -70,18 +70,17 @@ def open_chat_room(
 ):
 
 
-    room = db.query(Room).filter(
+    room = get_room(
 
-        Room.id == room_id
+        db,
 
-    ).first()
+        room_id
 
-
+    )
 
 
 
     if not room:
-
 
         raise HTTPException(
 
@@ -93,17 +92,15 @@ def open_chat_room(
 
 
 
-
-
     return templates.TemplateResponse(
 
         "chat.html",
 
         {
 
-            "request": request,
+            "request":request,
 
-            "room": room
+            "room":room
 
         }
 
@@ -111,33 +108,47 @@ def open_chat_room(
 
 
 
+# ==========================================================
+# GET OLD MESSAGES
+# ==========================================================
 
+@router.get("/{room_id}/messages")
 
+def messages(
 
+    room_id:int,
 
-
-# =====================================================
-# GET ROOM MESSAGES
-# =====================================================
-
-
-@router.get("/chat/{room_id}/messages")
-
-def get_room_messages(
-
-    room_id: int,
-
-    db: Session = Depends(get_db)
+    db:Session = Depends(get_db)
 
 ):
 
 
-    messages = db.query(Message).filter(
+    room = get_room(
 
-        Message.room_id == room_id
+        db,
 
-    ).all()
+        room_id
+
+    )
 
 
 
-    return messages
+    if not room:
+
+        raise HTTPException(
+
+            status_code=404,
+
+            detail="Room not found"
+
+        )
+
+
+
+    return get_room_messages(
+
+        db,
+
+        room_id
+
+    )

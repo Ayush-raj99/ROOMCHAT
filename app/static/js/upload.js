@@ -1,149 +1,34 @@
 /*
 RoomChat V2
+
 Upload JavaScript
 
 Handles:
-- Image upload
 - File upload
-- Attachment sending
+- Sending file message through WebSocket
 */
 
 
 
+document.addEventListener(
 
+    "DOMContentLoaded",
 
-let uploadButton =
+    function(){
 
-document.getElementById(
 
-    "uploadBtn"
 
-);
+        const uploadBtn = document.getElementById(
 
+            "uploadBtn"
 
+        );
 
-let fileInput =
 
-document.getElementById(
 
-    "fileInput"
+        const fileInput = document.getElementById(
 
-);
-
-
-
-
-
-
-
-// =====================================================
-// OPEN FILE SELECTOR
-// =====================================================
-
-
-if(uploadButton){
-
-
-    uploadButton.addEventListener(
-
-        "click",
-
-        function(){
-
-
-            fileInput.click();
-
-
-        }
-
-    );
-
-}
-
-
-
-
-
-
-
-
-// =====================================================
-// UPLOAD FILE
-// =====================================================
-
-
-if(fileInput){
-
-
-
-fileInput.addEventListener(
-
-"change",
-
-async function(){
-
-
-
-    let file =
-
-    fileInput.files[0];
-
-
-
-
-
-    if(!file)
-
-    return;
-
-
-
-
-
-
-
-    let formData =
-
-    new FormData();
-
-
-
-
-
-    formData.append(
-
-        "file",
-
-        file
-
-    );
-
-
-
-
-
-
-
-    try{
-
-
-
-        let response =
-
-        await fetch(
-
-            "/upload",
-
-            {
-
-
-                method:"POST",
-
-
-                body:formData
-
-
-            }
+            "fileInput"
 
         );
 
@@ -151,135 +36,212 @@ async function(){
 
 
 
+        if(
+
+            !uploadBtn ||
+
+            !fileInput
+
+        ){
+
+            return;
+
+        }
 
 
 
-        let result =
-
-        await response.json();
 
 
 
 
+        uploadBtn.onclick = async function(){
 
 
 
-        if(result.url){
+
+
+            const file = fileInput.files[0];
 
 
 
-            sendAttachment(
 
-                result.url,
 
-                file.type
+            if(!file){
+
+
+
+                alert(
+
+                    "Select a file"
+
+                );
+
+
+                return;
+
+
+            }
+
+
+
+
+
+
+
+            const formData = new FormData();
+
+
+
+
+
+            formData.append(
+
+                "file",
+
+                file
 
             );
 
 
 
-        }
 
+
+
+
+            try{
+
+
+
+
+
+                const response = await fetch(
+
+                    "/upload/file",
+
+                    {
+
+
+                        method:"POST",
+
+
+                        body:formData
+
+
+                    }
+
+                );
+
+
+
+
+
+
+
+                const data = await response.json();
+
+
+
+
+
+
+
+                if(!response.ok){
+
+
+
+                    alert(
+
+                        data.detail ||
+
+                        "Upload failed"
+
+                    );
+
+
+
+                    return;
+
+
+                }
+
+
+
+
+
+
+
+                // Send file message to websocket
+
+
+
+                if(window.socket){
+
+
+
+                    window.socket.send(
+
+                        JSON.stringify({
+
+
+                            type:"image",
+
+
+                            url:data.url
+
+
+                        })
+
+
+                    );
+
+
+
+                }
+
+
+
+
+
+
+
+                fileInput.value="";
+
+
+
+
+
+
+            }
+
+
+
+            catch(error){
+
+
+
+                console.error(error);
+
+
+
+                alert(
+
+                    "Upload error"
+
+                );
+
+
+
+            }
+
+
+
+
+
+        };
 
 
 
 
     }
-
-    catch(error){
-
-
-
-        console.log(error);
-
-
-
-        showAlert(
-
-            "Upload failed",
-
-            "error"
-
-        );
-
-
-
-    }
-
-
-
-
-}
 
 );
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// =====================================================
-// SEND ATTACHMENT MESSAGE
-// =====================================================
-
-
-function sendAttachment(
-
-    url,
-
-    type
-
-){
-
-
-
-    if(
-
-        typeof chatSocket ===
-
-        "undefined" ||
-
-        chatSocket === null
-
-    )
-
-    return;
-
-
-
-
-
-
-
-    chatSocket.send(
-
-        JSON.stringify({
-
-
-
-            content:
-
-            url,
-
-
-
-            attachment_type:
-
-            type
-
-
-
-        })
-
-    );
-
-
-
-}
