@@ -2,11 +2,6 @@
 RoomChat V2
 
 Room Routes
-
-Handles:
-- Create room
-- Join room page
-- Room access verification
 """
 
 from fastapi import APIRouter, Depends, Request, HTTPException
@@ -15,6 +10,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
 from app.database.database import get_db
+from app.models.models import User
 
 from app.services.room_service import (
     create_room,
@@ -22,29 +18,22 @@ from app.services.room_service import (
     user_can_access_room
 )
 
+from app.services.security import verify_password
 
-# ==================================================
-# ROUTER
-# ==================================================
 
 router = APIRouter(
     prefix="/rooms",
     tags=["Rooms"]
 )
 
-
-# ==================================================
-# TEMPLATE ENGINE
-# ==================================================
-
 templates = Jinja2Templates(
     directory="app/templates"
 )
 
 
-# ==================================================
+# =====================================================
 # SCHEMAS
-# ==================================================
+# =====================================================
 
 class RoomCreate(BaseModel):
     name: str
@@ -57,9 +46,9 @@ class RoomJoin(BaseModel):
     password: str
 
 
-# ==================================================
+# =====================================================
 # CREATE ROOM
-# ==================================================
+# =====================================================
 
 @router.post("/")
 def create_new_room(
@@ -73,12 +62,6 @@ def create_new_room(
         data.password
     )
 
-    if not room:
-        raise HTTPException(
-            status_code=400,
-            detail="Room already exists"
-        )
-
     return {
         "message": "Room created",
         "id": room.id,
@@ -86,9 +69,9 @@ def create_new_room(
     }
 
 
-# ==================================================
-# JOIN ROOM PAGE
-# ==================================================
+# =====================================================
+# JOIN PAGE
+# =====================================================
 
 @router.api_route(
     "/join/{room_id}",
@@ -105,7 +88,7 @@ def join_room_page(
         room_id
     )
 
-    if not room:
+    if room is None:
         raise HTTPException(
             status_code=404,
             detail="Room not found"
@@ -120,40 +103,58 @@ def join_room_page(
     )
 
 
-# ==================================================
-# JOIN ROOM VERIFY
-# ==================================================
+# =====================================================
+# JOIN ROOM
+# =====================================================
 
 @router.post("/join")
 def join_room(
     data: RoomJoin,
     db: Session = Depends(get_db)
 ):
-    from app.models.models import User
-    from app.services.security import verify_password
 
     user = db.query(User).filter(
         User.username == data.username
     ).first()
 
-    if not user:
+    if user is None:
         raise HTTPException(
             status_code=404,
             detail="User not found"
         )
 
-    room = get_room(db, data.room_id)
+    room = get_room(
+        db,
+        data.room_id
+    )
 
-    if not room:
+    if room is None:
         raise HTTPException(
             status_code=404,
             detail="Room not found"
         )
 
-    if not verify_password(
+    # ===============================
+    # DEBUG
+    # ===============================
+
+    print("=" * 60)
+    print("JOIN ROOM DEBUG")
+    print("Username :", user.username)
+    print("Password entered :", data.password)
+    print("Hash in database :", room.password)
+
+    result = verify_password(
         data.password,
         room.password
-    ):
+    )
+
+    print("Password verified :", result)
+    print("=" * 60)
+
+    # ===============================
+
+    if not result:
         raise HTTPException(
             status_code=401,
             detail="Wrong room password"
@@ -171,5 +172,7 @@ def join_room(
 
     return {
         "message": "Joined successfully",
-        "room_id": room.id
+        "room_id": room.id,
+        "user_id": user.id,
+        "username": user.username
     }
