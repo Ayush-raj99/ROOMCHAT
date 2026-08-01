@@ -356,4 +356,22 @@ def assign_room(
 
         "result": result
 
+
     }
+@router.get("/debug-members")
+def debug_members(
+    db: Session = Depends(get_db)
+):
+
+    from app.models.models import RoomMember
+
+    members = db.query(RoomMember).all()
+
+    return [
+        {
+            "id": m.id,
+            "user_id": m.user_id,
+            "room_id": m.room_id
+        }
+        for m in members
+    ]
