@@ -138,15 +138,20 @@ document.addEventListener(
 
 
 
+const protocol =
+    window.location.protocol === "https:"
+        ? "wss://"
+        : "ws://";
 
 
+socket = new WebSocket(
 
-        socket = new WebSocket(
+    `${protocol}${window.location.host}/ws/${roomId}/${user.id}`
 
-            `ws://${window.location.host}/ws/${roomId}/${user.id}`
+);
 
-        );
 
+        
 
 
 

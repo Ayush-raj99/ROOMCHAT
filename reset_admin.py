@@ -5,17 +5,28 @@ from app.services.security import hash_password
 
 db = SessionLocal()
 
+
 admin = db.query(User).filter(
-    User.username == "Ayush"
+    User.username == "admin"
 ).first()
 
 
 if admin:
-    admin.password = hash_password("PJNU6S5A")
+
+    admin.password = hash_password("12345678")
+
     db.commit()
-    print("Admin password changed")
+
+    print("Admin password reset successfully")
+
+    print("Username: admin")
+
+    print("Password: 12345678")
+
+
 else:
-    print("Admin not found")
+
+    print("Admin account not found")
 
 
 db.close()
