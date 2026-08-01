@@ -4,19 +4,17 @@ RoomChat V2
 Room Routes
 
 Handles:
-- Room creation
+- Create room
 - Join room page
 - Room access verification
 """
 
-
 from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
 from app.database.database import get_db
-
-from app.models.models import Room, User
 
 from app.services.room_service import (
     create_room,
@@ -24,13 +22,10 @@ from app.services.room_service import (
     user_can_access_room
 )
 
-from app.templates_engine import templates
 
-
-
-# ==========================================================
+# ==================================================
 # ROUTER
-# ==========================================================
+# ==================================================
 
 router = APIRouter(
     prefix="/rooms",
@@ -38,34 +33,33 @@ router = APIRouter(
 )
 
 
+# ==================================================
+# TEMPLATE ENGINE
+# ==================================================
 
-# ==========================================================
+templates = Jinja2Templates(
+    directory="app/templates"
+)
+
+
+# ==================================================
 # SCHEMAS
-# ==========================================================
-
+# ==================================================
 
 class RoomCreate(BaseModel):
-
     name: str
-
     password: str
-
 
 
 class RoomJoin(BaseModel):
-
     room_id: int
-
     username: str
-
     password: str
 
 
-
-# ==========================================================
+# ==================================================
 # CREATE ROOM
-# ==========================================================
-
+# ==================================================
 
 @router.post("/")
 def create_new_room(
@@ -79,31 +73,22 @@ def create_new_room(
         data.password
     )
 
-
     if not room:
-
         raise HTTPException(
             status_code=400,
-            detail="Room creation failed"
+            detail="Room already exists"
         )
 
-
     return {
-
         "message": "Room created",
-
-        "room_id": room.id,
-
-        "room_name": room.name
-
+        "id": room.id,
+        "name": room.name
     }
 
 
-
-# ==========================================================
+# ==================================================
 # JOIN ROOM PAGE
-# ==========================================================
-
+# ==================================================
 
 @router.api_route(
     "/join/{room_id}",
@@ -120,28 +105,24 @@ def join_room_page(
         room_id
     )
 
-
     if not room:
-
         raise HTTPException(
             status_code=404,
             detail="Room not found"
         )
 
-return templates.TemplateResponse(
-    request=request,
-    name="join_room.html",
-    context={
-        "room": room
-    }
-)
-    
+    return templates.TemplateResponse(
+        request=request,
+        name="join_room.html",
+        context={
+            "room": room
+        }
+    )
 
 
-# ==========================================================
+# ==================================================
 # JOIN ROOM VERIFY
-# ==========================================================
-
+# ==================================================
 
 @router.post("/join")
 def join_room(
@@ -149,74 +130,21 @@ def join_room(
     db: Session = Depends(get_db)
 ):
 
-
-    user = db.query(User).filter(
-        User.username == data.username
-    ).first()
-
-
-    if not user:
-
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
-
-
     allowed = user_can_access_room(
         db,
-        user.id,
-        data.room_id
+        data.username,
+        data.room_id,
+        data.password
     )
-
 
     if not allowed:
-
         raise HTTPException(
-            status_code=403,
-            detail="Access denied"
+            status_code=401,
+            detail="Invalid room password or access denied"
         )
 
-
     return {
-
-        "message": "Room joined",
-
-        "room_id": data.room_id
-
-    }
-
-
-
-# ==========================================================
-# ROOM DETAILS
-# ==========================================================
-
-
-@router.get("/{room_id}")
-def room_details(
-    room_id: int,
-    db: Session = Depends(get_db)
-):
-
-    room = get_room(
-        db,
-        room_id
-    )
-
-
-    if not room:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Room not found"
-        )
-
-
-    return {
-
-        "id": room.id,
-
-        "name": room.name
-
+        "message": "Joined room successfully",
+        "room_id": data.room_id,
+        "username": data.username
     }
