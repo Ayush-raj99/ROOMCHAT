@@ -5,3 +5,4 @@ templates = Jinja2Templates(
     directory="app/templates"
 )
 
+templates.env.auto_reload = True
