@@ -164,6 +164,10 @@ function connectSocket(user){
                 event.data
             );
 
+            console.log("RECEIVED MESSAGE:", data);
+
+            
+
 
         displayMessage(data);
 

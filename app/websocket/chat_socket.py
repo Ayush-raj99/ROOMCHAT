@@ -175,7 +175,7 @@ async def chat_socket(
                     "type": "image",
 
 
-                    "user_id": user_id,
+                    "user_id": int(user_id),
 
 
                     "url": image_url,
