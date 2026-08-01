@@ -7,4 +7,5 @@ templates = Jinja2Templates(
 
 
 # Disable Jinja cache issue
-templates.env.cache = {}
+
+templates.env.clear()
