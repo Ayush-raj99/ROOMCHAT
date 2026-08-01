@@ -85,19 +85,13 @@ def open_chat(
 
 
 
-    return templates.TemplateResponse(
-
-        "chat.html",
-
-        {
-
-            "request":request,
-
-            "room":room
-
-        }
-
-    )
+return templates.TemplateResponse(
+    request=request,
+    name="chat.html",
+    context={
+        "room": room
+    }
+)
 
 
 

@@ -128,15 +128,14 @@ def join_room_page(
             detail="Room not found"
         )
 
-
-    return templates.TemplateResponse(
-        "join_room.html",
-        {
-            "request": request,
-            "room": room
-        }
-    )
-
+return templates.TemplateResponse(
+    request=request,
+    name="join_room.html",
+    context={
+        "room": room
+    }
+)
+    
 
 
 # ==========================================================

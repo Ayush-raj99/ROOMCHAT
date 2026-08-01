@@ -5,6 +5,3 @@ templates = Jinja2Templates(
     directory="app/templates"
 )
 
-
-# Disable Jinja template cache
-templates.env.cache = {}
