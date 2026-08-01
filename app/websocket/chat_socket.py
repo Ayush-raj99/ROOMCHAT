@@ -78,6 +78,8 @@ async def chat_socket(
 
 
 
+
+
             message_data = json.loads(
 
                 data
@@ -253,18 +255,30 @@ async def chat_socket(
 
 
 
+except WebSocketDisconnect:
 
-    except WebSocketDisconnect:
+    print(
+        f"User {user_id} disconnected from room {room_id}"
+    )
+
+    manager.disconnect(
+        websocket,
+        room_id
+    )
 
 
+except Exception as e:
 
-        manager.disconnect(
+    print(
+        "WEBSOCKET ERROR:",
+        e
+    )
 
-            websocket,
-
-            room_id
-
-        )
+    manager.disconnect(
+        websocket,
+        room_id
+    )
+    
 
 
 
