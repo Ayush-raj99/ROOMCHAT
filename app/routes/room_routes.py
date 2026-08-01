@@ -2,6 +2,11 @@
 RoomChat V2
 
 Room Routes
+
+Handles:
+- Create room
+- Join room page
+- Room access verification
 """
 
 from fastapi import APIRouter, Depends, Request, HTTPException
@@ -15,7 +20,7 @@ from app.models.models import User
 from app.services.room_service import (
     create_room,
     get_room,
-    user_can_access_room
+    user_can_access_room,
 )
 
 from app.services.security import verify_password
@@ -31,9 +36,9 @@ templates = Jinja2Templates(
 )
 
 
-# =====================================================
+# ==========================================================
 # SCHEMAS
-# =====================================================
+# ==========================================================
 
 class RoomCreate(BaseModel):
     name: str
@@ -46,16 +51,15 @@ class RoomJoin(BaseModel):
     password: str
 
 
-# =====================================================
+# ==========================================================
 # CREATE ROOM
-# =====================================================
+# ==========================================================
 
 @router.post("/")
 def create_new_room(
     data: RoomCreate,
     db: Session = Depends(get_db)
 ):
-
     room = create_room(
         db,
         data.name,
@@ -69,9 +73,9 @@ def create_new_room(
     }
 
 
-# =====================================================
+# ==========================================================
 # JOIN PAGE
-# =====================================================
+# ==========================================================
 
 @router.api_route(
     "/join/{room_id}",
@@ -82,13 +86,9 @@ def join_room_page(
     room_id: int,
     db: Session = Depends(get_db)
 ):
+    room = get_room(db, room_id)
 
-    room = get_room(
-        db,
-        room_id
-    )
-
-    if room is None:
+    if not room:
         raise HTTPException(
             status_code=404,
             detail="Room not found"
@@ -103,21 +103,20 @@ def join_room_page(
     )
 
 
-# =====================================================
+# ==========================================================
 # JOIN ROOM
-# =====================================================
+# ==========================================================
 
 @router.post("/join")
 def join_room(
     data: RoomJoin,
     db: Session = Depends(get_db)
 ):
-
     user = db.query(User).filter(
         User.username == data.username
     ).first()
 
-    if user is None:
+    if not user:
         raise HTTPException(
             status_code=404,
             detail="User not found"
@@ -128,43 +127,42 @@ def join_room(
         data.room_id
     )
 
-    if room is None:
+    if not room:
         raise HTTPException(
             status_code=404,
             detail="Room not found"
         )
 
-    # ===============================
-    # DEBUG
-    # ===============================
-
-    print("=" * 60)
-    print("JOIN ROOM DEBUG")
-    print("Username :", user.username)
-    print("Password entered :", data.password)
-    print("Hash in database :", room.password)
-
-    result = verify_password(
+    password_ok = verify_password(
         data.password,
         room.password
     )
 
-    print("Password verified :", result)
-    print("=" * 60)
+    print("\n================ JOIN ROOM DEBUG ================")
+    print("Username :", data.username)
+    print("User ID  :", user.id)
+    print("Room ID Requested :", data.room_id)
+    print("Room ID Found     :", room.id)
+    print("Password Verified :", password_ok)
 
-    # ===============================
-
-    if not result:
+    if not password_ok:
+        print("Password check FAILED")
+        print("=================================================\n")
         raise HTTPException(
             status_code=401,
             detail="Wrong room password"
         )
 
-    if not user_can_access_room(
+    allowed = user_can_access_room(
         db,
         user.id,
         room.id
-    ):
+    )
+
+    print("Access Allowed :", allowed)
+    print("=================================================\n")
+
+    if not allowed:
         raise HTTPException(
             status_code=403,
             detail="You are not assigned to this room."

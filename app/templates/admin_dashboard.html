@@ -1,49 +1,31 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 
 <head>
 
-
     <meta charset="UTF-8">
-
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
     <title>
-
         Admin Dashboard
-
     </title>
-
 
 
     <link rel="stylesheet" href="/static/css/style.css">
 
-
 </head>
-
 
 
 <body>
 
 
-
 <div class="admin-container">
 
 
-
-
-
     <h1>
-
         Admin Dashboard
-
     </h1>
-
-
 
 
 
@@ -52,50 +34,32 @@
     <section class="admin-card">
 
 
-
         <h2>
-
             Create User
-
         </h2>
 
 
-
-
         <input
-
             id="newUsername"
-
             placeholder="Username"
-
         >
-
 
 
         <input
-
             id="newUserPassword"
-
             type="password"
-
             placeholder="Password"
-
         >
-
 
 
         <button id="createUserBtn">
 
-
             Create User
-
 
         </button>
 
 
-
     </section>
-
 
 
 
@@ -107,54 +71,35 @@
     <section class="admin-card">
 
 
-
         <h2>
-
             Create Room
-
         </h2>
 
 
 
-
-
         <input
-
             id="newRoomName"
-
             placeholder="Room Name"
-
         >
-
 
 
 
         <input
-
             id="newRoomPassword"
-
             type="password"
-
             placeholder="Room Password"
-
         >
-
 
 
 
         <button id="createRoomBtn">
 
-
             Create Room
-
 
         </button>
 
 
-
-
     </section>
-
 
 
 
@@ -167,56 +112,43 @@
     <section class="admin-card">
 
 
-
         <h2>
-
             Assign User To Room
-
         </h2>
 
 
 
+        <select id="assignUserId">
 
+            <option value="">
+                Select User
+            </option>
 
-
-        <input
-
-            id="assignUserId"
-
-            placeholder="User ID"
-
-        >
-
+        </select>
 
 
 
 
-        <input
+        <select id="assignRoomId">
 
-            id="assignRoomId"
+            <option value="">
+                Select Room
+            </option>
 
-            placeholder="Room ID"
-
-        >
-
+        </select>
 
 
 
 
         <button id="assignBtn">
 
-
             Assign
-
 
         </button>
 
 
 
-
-
     </section>
-
 
 
 
@@ -230,26 +162,19 @@
     <section class="admin-card">
 
 
-
         <h2>
-
             Change Room Password
-
         </h2>
 
 
 
+        <select id="changeRoomId">
 
+            <option value="">
+                Select Room
+            </option>
 
-        <input
-
-            id="changeRoomId"
-
-            placeholder="Room ID"
-
-        >
-
-
+        </select>
 
 
 
@@ -257,28 +182,22 @@
 
             id="changePassword"
 
+            type="password"
+
             placeholder="New Password"
 
         >
 
 
 
-
-
         <button id="changePasswordBtn">
 
-
             Change Password
-
 
         </button>
 
 
-
-
-
     </section>
-
 
 
 
@@ -292,46 +211,32 @@
     <section class="admin-card">
 
 
-
         <h2>
-
             Delete Room
-
         </h2>
 
 
 
 
+        <select id="deleteRoomId">
 
+            <option value="">
+                Select Room
+            </option>
 
-        <input
-
-            id="deleteRoomId"
-
-            placeholder="Room ID"
-
-        >
-
+        </select>
 
 
 
 
         <button id="deleteRoomBtn">
 
-
             Delete Room
-
 
         </button>
 
 
-
-
     </section>
-
-
-
-
 
 
 
@@ -345,8 +250,6 @@
 
 
 
-
 </body>
-
 
 </html>
