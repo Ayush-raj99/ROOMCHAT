@@ -1,169 +1,174 @@
 /*
 RoomChat V2
-Main Style
+WhatsApp Style Chat UI
 */
 
 
 *{
-
-box-sizing:border-box;
-
-margin:0;
-
-padding:0;
-
-font-family:
-"Segoe UI",
-Arial,
-sans-serif;
-
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
 }
-
 
 
 body{
 
-background:#111b21;
-
-color:white;
-
-height:100vh;
+    background:#0b141a;
+    color:white;
+    min-height:100vh;
 
 }
 
 
 
+/* ==========================
+   CHAT CONTAINER
+========================== */
 
-
-
-
-/* CHAT */
 
 .chat-container{
 
-width:95%;
+    width:100%;
+    max-width:900px;
+    height:95vh;
 
-max-width:900px;
+    margin:20px auto;
 
-height:90vh;
+    background:#111b21;
 
-margin:20px auto;
+    border-radius:15px;
 
-background:#0b141a;
+    display:flex;
 
-border-radius:15px;
+    flex-direction:column;
 
-display:flex;
-
-flex-direction:column;
-
-overflow:hidden;
+    overflow:hidden;
 
 }
 
 
 
+/* ==========================
+   HEADER
+========================== */
 
 
 .chat-header{
 
-padding:18px;
+    height:70px;
 
-background:#202c33;
+    padding:15px 20px;
 
-display:flex;
+    background:#202c33;
 
-justify-content:space-between;
+    display:flex;
 
-align-items:center;
+    justify-content:space-between;
+
+    align-items:center;
+
+    border-bottom:1px solid #333;
 
 }
 
 
+.chat-header h2{
 
+    font-size:20px;
+
+}
 
 
 #roomStatus{
 
-color:#00a884;
+    font-size:13px;
 
-font-size:14px;
+    color:#25d366;
 
 }
 
 
 
+
+
+/* ==========================
+   MESSAGE AREA
+========================== */
 
 
 .message-box{
 
-flex:1;
 
-padding:20px;
+    flex:1;
 
-overflow-y:auto;
+    overflow-y:auto;
 
-background:#0b141a;
+    padding:20px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
 
 }
 
 
 
-
-
+/* ==========================
+   MESSAGE COMMON
+========================== */
 
 
 .message{
 
-position:relative;
 
-max-width:70%;
+    max-width:70%;
 
-padding:12px 45px 18px 14px;
+    padding:10px 14px;
 
-margin-bottom:12px;
+    border-radius:10px;
 
-border-radius:12px;
+    position:relative;
 
-font-size:15px;
+    word-wrap:break-word;
 
-line-height:1.4;
+    font-size:15px;
 
-word-wrap:break-word;
+    line-height:1.4;
+
+
+    background:#202c33;
+
+
+    color:white;
+
+
+    align-self:flex-start;
+
 
 }
 
 
 
 
+/* OTHER PERSON MESSAGE
+   LEFT SIDE
+*/
 
-
-/* MY MESSAGE RIGHT */
-
-.my-message{
-
-margin-left:auto;
-
-background:#005c4b;
-
-border-bottom-right-radius:3px;
-
-}
-
-
-
-
-
-
-/* OTHER USER LEFT */
 
 .other-message{
 
-margin-right:auto;
 
-background:#202c33;
+    align-self:flex-start;
 
-border-bottom-left-radius:3px;
+    background:#202c33;
+
+
+    border-top-left-radius:2px;
+
 
 }
 
@@ -171,24 +176,22 @@ border-bottom-left-radius:3px;
 
 
 
+/* MY MESSAGE
+   RIGHT SIDE
+*/
 
 
-/* DOUBLE TICK */
+.my-message{
 
 
-.ticks{
+    align-self:flex-end;
 
-position:absolute;
 
-right:8px;
+    background:#005c4b;
 
-bottom:5px;
 
-font-size:11px;
+    border-top-right-radius:2px;
 
-letter-spacing:-2px;
-
-color:#d9fdd3;
 
 }
 
@@ -196,16 +199,53 @@ color:#d9fdd3;
 
 
 
-/* IMAGE */
+/* ==========================
+   MESSAGE TEXT
+========================== */
 
 
-.chat-image{
+.message p{
 
-max-width:260px;
+    margin:0;
 
-border-radius:10px;
+    padding-right:35px;
 
-display:block;
+}
+
+
+
+/* ==========================
+   DOUBLE TICK
+========================== */
+
+
+.tick{
+
+
+    position:absolute;
+
+    right:8px;
+
+    bottom:5px;
+
+
+    font-size:11px;
+
+
+    color:#ffffff;
+
+
+    letter-spacing:-2px;
+
+
+}
+
+
+.tick.seen{
+
+
+    color:#53bdeb;
+
 
 }
 
@@ -213,21 +253,22 @@ display:block;
 
 
 
-
-
-
-/* INPUT */
+/* ==========================
+   INPUT AREA
+========================== */
 
 
 .chat-input{
 
-display:flex;
 
-padding:12px;
+    padding:12px;
 
-background:#202c33;
+    background:#202c33;
 
-gap:10px;
+    display:flex;
+
+    gap:10px;
+
 
 }
 
@@ -236,39 +277,67 @@ gap:10px;
 
 .chat-input input{
 
-flex:1;
 
-background:#2a3942;
+    flex:1;
 
-color:white;
 
-border:none;
+    background:#2a3942;
 
-padding:13px;
 
-border-radius:20px;
+    border:none;
 
-outline:none;
+
+    color:white;
+
+
+    padding:13px;
+
+
+    border-radius:25px;
+
+
+    outline:none;
+
+
+    font-size:15px;
+
 
 }
-
 
 
 
 
 .chat-input button{
 
-background:#00a884;
 
-color:white;
+    width:60px;
 
-border:none;
 
-padding:12px 22px;
+    border:none;
 
-border-radius:20px;
 
-cursor:pointer;
+    border-radius:50%;
+
+
+    background:#00a884;
+
+
+    color:white;
+
+
+    cursor:pointer;
+
+
+}
+
+
+
+
+.chat-input button:hover{
+
+
+    background:#06cf9c;
+
 
 }
 
@@ -276,24 +345,17 @@ cursor:pointer;
 
 
 
+/* ==========================
+   IMAGE MESSAGE
+========================== */
 
 
-button:hover{
-
-opacity:.8;
-
-}
+.message img{
 
 
+    max-width:250px;
 
-
-
-
-input{
-
-background:#2a3942;
-
-color:white;
+    border-radius:10px;
 
 }
 
@@ -301,16 +363,100 @@ color:white;
 
 
 
+/* ==========================
+   FILE UPLOAD
+========================== */
+
+
+.file-upload{
+
+
+    padding:10px;
+
+    background:#111b21;
+
+    display:flex;
+
+    gap:10px;
+
+
+}
+
+
+
+.file-upload input{
+
+
+    color:white;
+
+
+}
+
+
+
+.file-upload button{
+
+
+    background:#00a884;
+
+}
+
+
+
+
+
+/* ==========================
+   SCROLL BAR
+========================== */
+
+
+.message-box::-webkit-scrollbar{
+
+    width:6px;
+
+}
+
+
+.message-box::-webkit-scrollbar-thumb{
+
+
+    background:#555;
+
+    border-radius:10px;
+
+
+}
+
+
+
+
+
+/* ==========================
+   MOBILE
+========================== */
 
 
 @media(max-width:600px){
 
 
-.message{
+.chat-container{
 
-max-width:85%;
+    height:100vh;
+
+    margin:0;
+
+    border-radius:0;
 
 }
+
+
+
+.message{
+
+    max-width:85%;
+
+}
+
 
 
 }

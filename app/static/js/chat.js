@@ -5,23 +5,25 @@ Chat JavaScript
 
 Features:
 - WebSocket chat
-- Left/right message alignment
-- Message history
+- Left/right messages
+- WhatsApp style bubbles
+- Double tick
 - Image messages
+- Message history
 */
 
 
 let socket = null;
 
-let messageBox;
-let messageInput;
-let sendBtn;
+let messageBox = null;
+let messageInput = null;
+let sendBtn = null;
 
 
 
-// ===============================
+// =====================================
 // GET USER
-// ===============================
+// =====================================
 
 function getCurrentUser(){
 
@@ -30,9 +32,7 @@ function getCurrentUser(){
 
 
     if(!user){
-
         return null;
-
     }
 
 
@@ -44,13 +44,14 @@ function getCurrentUser(){
 
 
 
-// ===============================
+// =====================================
 // START
-// ===============================
+// =====================================
+
 
 document.addEventListener(
 "DOMContentLoaded",
-function(){
+()=>{
 
 
     messageBox =
@@ -92,13 +93,6 @@ function(){
     connectSocket(user);
 
 
-    loadOldMessages(
-        user.room_id
-    );
-
-
-    setupSendButton();
-
 
 });
 
@@ -108,9 +102,11 @@ function(){
 
 
 
-// ===============================
+
+// =====================================
 // WEBSOCKET
-// ===============================
+// =====================================
+
 
 function connectSocket(user){
 
@@ -118,10 +114,8 @@ function connectSocket(user){
 
     const protocol =
         window.location.protocol === "https:"
-        ?
-        "wss"
-        :
-        "ws";
+        ? "wss"
+        : "ws";
 
 
 
@@ -131,7 +125,7 @@ function connectSocket(user){
 
 
     console.log(
-        "Connecting:",
+        "Socket:",
         url
     );
 
@@ -143,20 +137,21 @@ function connectSocket(user){
 
 
 
+    socket.onopen = ()=>{
 
-    socket.onopen=function(){
 
         updateStatus(
             "Connected 🟢"
         );
+
 
     };
 
 
 
 
-
-    socket.onmessage=function(event){
+    socket.onmessage =
+    (event)=>{
 
 
         const data =
@@ -164,12 +159,16 @@ function connectSocket(user){
                 event.data
             );
 
-            console.log("RECEIVED MESSAGE:", data);
 
-            
+        console.log(
+            "Received:",
+            data
+        );
 
 
-        displayMessage(data);
+        displayMessage(
+            data
+        );
 
 
     };
@@ -177,27 +176,36 @@ function connectSocket(user){
 
 
 
+    socket.onclose = ()=>{
 
-    socket.onclose=function(){
 
         updateStatus(
             "Disconnected 🔴"
         );
 
+
     };
 
 
 
+    socket.onerror =
+    (e)=>{
 
-
-    socket.onerror=function(){
-
-        updateStatus(
-            "Error 🔴"
+        console.log(
+            "Socket error",
+            e
         );
 
     };
 
+
+
+    loadOldMessages(
+        user.room_id
+    );
+
+
+    setupSend();
 
 
 }
@@ -208,9 +216,11 @@ function connectSocket(user){
 
 
 
-// ===============================
+
+
+// =====================================
 // STATUS
-// ===============================
+// =====================================
 
 
 function updateStatus(text){
@@ -224,10 +234,10 @@ function updateStatus(text){
 
     if(status){
 
-        status.innerText=text;
+        status.innerHTML =
+            text;
 
     }
-
 
 }
 
@@ -237,46 +247,39 @@ function updateStatus(text){
 
 
 
-// ===============================
-// SEND BUTTON
-// ===============================
 
 
-function setupSendButton(){
+// =====================================
+// SEND MESSAGE
+// =====================================
+
+
+function setupSend(){
 
 
 
-    if(!sendBtn){
-
+    if(!sendBtn)
         return;
 
-    }
 
 
-
-    sendBtn.onclick=function(){
-
-        sendMessage();
-
-    };
-
-
+    sendBtn.onclick =
+    sendMessage;
 
 
 
     messageInput.addEventListener(
-    "keypress",
-    function(e){
+        "keypress",
+        (e)=>{
 
+            if(e.key==="Enter"){
 
-        if(e.key==="Enter"){
+                sendMessage();
 
-            sendMessage();
+            }
 
         }
-
-
-    });
+    );
 
 
 }
@@ -285,11 +288,6 @@ function setupSendButton(){
 
 
 
-
-
-// ===============================
-// SEND MESSAGE
-// ===============================
 
 
 function sendMessage(){
@@ -302,11 +300,9 @@ function sendMessage(){
 
 
     if(
-        text===""
-        ||
-        !socket
-        ||
-        socket.readyState !== WebSocket.OPEN
+        !text ||
+        !socket ||
+        socket.readyState !== 1
     ){
 
         return;
@@ -316,6 +312,7 @@ function sendMessage(){
 
 
     socket.send(
+
         JSON.stringify({
 
             type:"text",
@@ -323,6 +320,7 @@ function sendMessage(){
             content:text
 
         })
+
     );
 
 
@@ -341,71 +339,73 @@ function sendMessage(){
 
 
 
-// ===============================
-// LOAD HISTORY
-// ===============================
+// =====================================
+// OLD MESSAGES
+// =====================================
 
 
 async function loadOldMessages(roomId){
 
 
-try{
+
+    try{
 
 
-const response =
-await fetch(
-`/chat/${roomId}/messages`
-);
+        const res =
+            await fetch(
+                `/chat/${roomId}/messages`
+            );
+
+
+        const messages =
+            await res.json();
 
 
 
-const messages =
-await response.json();
+        messages.forEach(
+        (msg)=>{
+
+
+            displayMessage({
+
+                type:
+                    msg.is_image
+                    ? "image"
+                    : "text",
+
+
+                user_id:
+                    msg.user_id,
+
+
+                content:
+                    msg.content,
+
+
+                url:
+                    msg.file_path
+
+            });
 
 
 
-messages.forEach(
-message=>{
+        });
 
 
-displayMessage({
 
-type:
-message.is_image
-?
-"image"
-:
-"text",
+    }
+    catch(e){
 
+        console.log(
+            "History error",
+            e
+        );
 
-user_id:
-message.user_id,
-
-
-content:
-message.content,
-
-
-url:
-message.file_path
-
-
-});
-
-
-});
+    }
 
 
 
 }
-catch(error){
-
-console.log(error);
-
-}
-
-
-}
 
 
 
@@ -415,138 +415,109 @@ console.log(error);
 
 
 
-
-// ===============================
+// =====================================
 // DISPLAY MESSAGE
-// ===============================
+// =====================================
 
 
 function displayMessage(data){
 
 
 
-const currentUser =
-getCurrentUser();
+    if(!messageBox)
+        return;
 
 
 
-if(!currentUser){
-
-return;
-
-}
-
-
-
-const box =
-document.createElement(
-"div"
-);
+    const div =
+        document.createElement(
+            "div"
+        );
 
 
 
-const myMessage =
-Number(currentUser.id)
-===
-Number(data.user_id);
+    const currentUser =
+        getCurrentUser();
 
 
 
 
 
-box.className =
-"message " +
-(
-myMessage
-?
-"my-message"
-:
-"other-message"
-);
+    const mine =
+        currentUser &&
+        Number(currentUser.id)
+        ===
+        Number(data.user_id);
+
+
+
+
+    if(mine){
+
+        div.className =
+            "message my-message";
+
+    }
+    else{
+
+        div.className =
+            "message other-message";
+
+    }
+
+
+
+
+
+    if(data.type==="image"){
+
+
+        div.innerHTML = `
+
+        <img src="${data.url}">
+
+        <span class="tick">
+            ✓✓
+        </span>
+
+        `;
+
+
+    }
+
+    else{
+
+
+        div.innerHTML = `
+
+        <p>
+        ${escapeHTML(
+            data.content || ""
+        )}
+        </p>
+
+        <span class="tick">
+            ✓✓
+        </span>
+
+        `;
+
+
+    }
 
 
 
 
 
 
-if(data.type==="image"){
+    messageBox.appendChild(
+        div
+    );
 
 
 
-box.innerHTML=`
-
-<img 
-src="${data.url}"
-class="chat-image"
->
-
-${
-
-myMessage
-
-?
-
-`<span class="ticks">
-✓✓
-</span>`
-
-:
-
-""
-
-}
-
-`;
-
-
-
-}
-
-else{
-
-
-
-box.innerHTML=`
-
-<span>
-${escapeHTML(
-data.content || ""
-)}
-</span>
-
-
-${
-
-myMessage
-
-?
-
-`<span class="ticks">
-✓✓
-</span>`
-
-:
-
-""
-
-}
-
-
-`;
-
-
-
-}
-
-
-
-
-messageBox.appendChild(box);
-
-
-
-messageBox.scrollTop =
-messageBox.scrollHeight;
+    messageBox.scrollTop =
+        messageBox.scrollHeight;
 
 
 
@@ -559,24 +530,26 @@ messageBox.scrollHeight;
 
 
 
-// ===============================
+
+// =====================================
 // SECURITY
-// ===============================
+// =====================================
 
 
 function escapeHTML(text){
 
 
-const div =
-document.createElement(
-"div"
-);
+    const div =
+        document.createElement(
+            "div"
+        );
 
 
-div.textContent=text;
+    div.textContent =
+        text;
 
 
-return div.innerHTML;
+    return div.innerHTML;
 
 
 }
