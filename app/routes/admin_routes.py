@@ -17,7 +17,7 @@ from fastapi import HTTPException
 from fastapi import Request
 
 
-from fastapi.templating import Jinja2Templates
+from app.templates_engine import templates
 
 
 from sqlalchemy.orm import Session
@@ -70,17 +70,6 @@ router = APIRouter(
 
 )
 
-
-
-
-
-
-
-templates = Jinja2Templates(
-
-    directory="app/templates"
-
-)
 
 
 
