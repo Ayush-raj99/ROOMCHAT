@@ -14,7 +14,6 @@ templates = Jinja2Templates(
 )
 
 
-
 @router.get("/")
 def home(
     request: Request,
@@ -25,8 +24,8 @@ def home(
 
 
     return templates.TemplateResponse(
-        "index.html",
-        {
+        name="index.html",
+        context={
             "request": request,
             "rooms": rooms
         }
