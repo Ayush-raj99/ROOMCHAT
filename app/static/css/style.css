@@ -1,300 +1,87 @@
 /*
 RoomChat V2
-Main Style
+WhatsApp Style Chat UI
 */
 
 
 *{
-
     box-sizing:border-box;
-
     margin:0;
-
     padding:0;
-
-    font-family:Arial, sans-serif;
-
+    font-family:
+    "Segoe UI",
+    Arial,
+    sans-serif;
 }
-
 
 
 body{
 
-
-    background:#121212;
-
+    background:#0b141a;
     color:white;
 
-    min-height:100vh;
-
-
 }
 
 
-
-
-/* ==========================
-   CONTAINERS
-========================== */
-
-
-.container{
-
-
-    width:90%;
-
-    max-width:900px;
-
-    margin:50px auto;
-
-    text-align:center;
-
-
-}
-
-
-
-.auth-box{
-
-
-    background:#1e1e1e;
-
-    padding:30px;
-
-    border-radius:15px;
-
-    max-width:400px;
-
-    margin:auto;
-
-
-}
-
-
-
-.admin-container{
-
-
-    width:90%;
-
-    max-width:900px;
-
-    margin:40px auto;
-
-
-}
-
-
-
-
-
-
-/* ==========================
-   HEADINGS
-========================== */
-
-
-h1{
-
-
-    font-size:40px;
-
-    margin-bottom:10px;
-
-
-}
-
-
-
-h2{
-
-
-    margin-bottom:15px;
-
-
-}
-
-
-
-.subtitle{
-
-
-    color:#aaa;
-
-    margin-bottom:30px;
-
-
-}
-
-
-
-
-
-
-/* ==========================
-   ROOM CARDS
-========================== */
-
-
-.rooms-container{
-
-
-    display:grid;
-
-    grid-template-columns:
-
-    repeat(auto-fit,minmax(220px,1fr));
-
-    gap:20px;
-
-
-}
-
-
-
-.room-card{
-
-
-    background:#1f1f1f;
-
-    padding:25px;
-
-    border-radius:15px;
-
-
-}
-
-
-
-
-
-/* ==========================
-   BUTTONS
-========================== */
-
-
-button{
-
-
-    background:#2563eb;
-
-    color:white;
-
-    border:none;
-
-    padding:12px 25px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
-    margin-top:10px;
-
-
-}
-
-
-
-button:hover{
-
-
-    background:#1d4ed8;
-
-
-}
-
-
-
-.admin-btn{
-
-
-    background:#dc2626;
-
-
-}
-
-
-
-.admin-btn:hover{
-
-
-    background:#b91c1c;
-
-
-}
-
-
-
-
-
-/* ==========================
-   INPUTS
-========================== */
-
-
-input{
-
-
-    width:100%;
-
-    padding:12px;
-
-    margin:8px 0;
-
-    border-radius:8px;
-
-    border:none;
-
-    background:#2b2b2b;
-
-    color:white;
-
-
-}
-
-
-
-
-
-/* ==========================
-   CHAT
-========================== */
+/* ===========================
+   CHAT CONTAINER
+=========================== */
 
 
 .chat-container{
 
-
     width:95%;
-
-    max-width:800px;
-
-    height:90vh;
+    max-width:900px;
+    height:92vh;
 
     margin:20px auto;
 
-    background:#1b1b1b;
+    background:#111b21;
 
-    border-radius:15px;
+    border-radius:18px;
 
     display:flex;
 
     flex-direction:column;
 
+    overflow:hidden;
 
 }
 
 
 
+/* ===========================
+   HEADER
+=========================== */
+
+
 .chat-header{
 
 
-    padding:20px;
+    background:#202c33;
 
-    border-bottom:1px solid #333;
+    padding:16px 20px;
 
     display:flex;
 
     justify-content:space-between;
+
+    align-items:center;
+
+
+    border-bottom:1px solid #30363a;
+
+
+}
+
+
+
+.chat-header h2{
+
+
+    font-size:20px;
+
+    font-weight:600;
 
 
 }
@@ -304,11 +91,18 @@ input{
 #roomStatus{
 
 
-    color:#22c55e;
+    font-size:13px;
+
+    color:#25d366;
 
 
 }
 
+
+
+/* ===========================
+   MESSAGE AREA
+=========================== */
 
 
 .message-box{
@@ -321,52 +115,198 @@ input{
     padding:20px;
 
 
+    background:#0b141a;
+
+
 }
 
 
+
+
+/* ===========================
+   MESSAGE BUBBLE
+=========================== */
 
 
 .message{
 
 
-    background:#333;
+    position:relative;
 
-    padding:10px;
+    max-width:65%;
+
+    padding:10px 45px 18px 12px;
+
+    margin-bottom:12px;
+
+
+    background:#202c33;
+
 
     border-radius:10px;
 
-    margin-bottom:10px;
 
-    max-width:70%;
+    font-size:15px;
+
+    line-height:1.4;
+
+
+    word-wrap:break-word;
 
 
 }
 
 
 
-.my-message{
+/*
+Other person's message
+LEFT SIDE
+*/
 
 
-    background:#2563eb;
+.message.other-message{
+
+
+    margin-right:auto;
+
+
+    background:#202c33;
+
+
+}
+
+
+
+/*
+My message
+RIGHT SIDE
+*/
+
+
+.message.my-message{
+
 
     margin-left:auto;
 
 
+    background:#005c4b;
+
+
 }
 
+
+
+
+
+
+/* ===========================
+   MESSAGE TEXT
+=========================== */
+
+
+.message p{
+
+
+    color:#e9edef;
+
+}
+
+
+
+/* ===========================
+   DOUBLE TICK
+=========================== */
+
+
+.message-status{
+
+
+    position:absolute;
+
+
+    right:10px;
+
+    bottom:5px;
+
+
+    font-size:12px;
+
+
+    color:#d1d7db;
+
+
+    letter-spacing:-3px;
+
+
+}
+
+
+
+
+/*
+Seen blue tick
+*/
+
+
+.message-status.seen{
+
+
+    color:#53bdeb;
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================
+   IMAGES
+=========================== */
+
+
+.message img{
+
+
+    max-width:250px;
+
+    border-radius:12px;
+
+    display:block;
+
+
+}
+
+
+
+
+
+
+/* ===========================
+   INPUT AREA
+=========================== */
 
 
 .chat-input{
 
 
+    background:#202c33;
+
+
     display:flex;
 
-    padding:15px;
 
     gap:10px;
 
 
+    padding:12px;
+
+
 }
+
 
 
 
@@ -376,16 +316,122 @@ input{
     flex:1;
 
 
+    background:#2a3942;
+
+
+    border:none;
+
+
+    outline:none;
+
+
+    color:white;
+
+
+    padding:12px 15px;
+
+
+    border-radius:20px;
+
+
+    font-size:15px;
+
+
 }
 
+
+
+
+.chat-input button{
+
+
+    background:#00a884;
+
+
+    border:none;
+
+
+    width:55px;
+
+
+    border-radius:50%;
+
+
+    color:white;
+
+
+    cursor:pointer;
+
+
+    font-size:18px;
+
+
+}
+
+
+
+.chat-input button:hover{
+
+
+    background:#06cf9c;
+
+
+}
+
+
+
+
+
+
+
+
+/* ===========================
+   FILE UPLOAD
+=========================== */
 
 
 .file-upload{
 
 
-    padding:15px;
+    display:flex;
 
-    border-top:1px solid #333;
+    gap:10px;
+
+
+    padding:10px;
+
+
+    background:#202c33;
+
+
+    border-top:1px solid #30363a;
+
+
+}
+
+
+
+.file-upload input{
+
+
+    flex:1;
+
+
+    background:#2a3942;
+
+
+    color:#ddd;
+
+
+}
+
+
+
+
+.file-upload button{
+
+
+    background:#00a884;
 
 
 }
@@ -396,21 +442,26 @@ input{
 
 
 
-/* ==========================
-   ADMIN
-========================== */
+/* ===========================
+   SCROLL BAR
+=========================== */
 
 
-.admin-card{
+.message-box::-webkit-scrollbar{
 
 
-    background:#1e1e1e;
+    width:6px;
 
-    padding:25px;
 
-    border-radius:15px;
+}
 
-    margin-bottom:20px;
+
+.message-box::-webkit-scrollbar-thumb{
+
+
+    background:#374045;
+
+    border-radius:10px;
 
 
 }
@@ -419,26 +470,38 @@ input{
 
 
 
-/* ==========================
+/* ===========================
    MOBILE
-========================== */
+=========================== */
 
 
 @media(max-width:600px){
 
 
-    h1{
+    .chat-container{
 
-        font-size:30px;
+
+        width:100%;
+
+        height:100vh;
+
+        margin:0;
+
+        border-radius:0;
+
 
     }
+
 
 
     .message{
 
+
         max-width:85%;
 
+
     }
+
 
 
 }

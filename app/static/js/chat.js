@@ -1,14 +1,6 @@
 /*
 RoomChat V2
-
-Chat JavaScript
-
-Handles:
-- Secure WebSocket connection
-- Sending messages
-- Receiving messages
-- Loading history
-- Image messages
+WhatsApp Style Chat JS
 */
 
 
@@ -19,10 +11,6 @@ let messageInput;
 let sendBtn;
 
 
-
-// =====================================
-// GET USER
-// =====================================
 
 function getCurrentUser(){
 
@@ -40,183 +28,104 @@ function getCurrentUser(){
 
 
 
-// =====================================
-// START CHAT
-// =====================================
-
 document.addEventListener(
-    "DOMContentLoaded",
-    function(){
+"DOMContentLoaded",
+()=>{
 
 
-        messageBox =
-            document.getElementById(
-                "messageBox"
-            );
+    messageBox =
+    document.getElementById("messageBox");
 
 
-        messageInput =
-            document.getElementById(
-                "messageInput"
-            );
+    messageInput =
+    document.getElementById("messageInput");
 
 
-        sendBtn =
-            document.getElementById(
-                "sendBtn"
-            );
+    sendBtn =
+    document.getElementById("sendBtn");
 
 
 
-        const user = getCurrentUser();
+    const user = getCurrentUser();
 
 
+    if(!user){
 
-        if(!user){
-
-            alert(
-                "User not found"
-            );
-
-            window.location.href="/";
-
-            return;
-
-        }
-
-
-
-        connectSocket(user);
-
-
+        alert("Login first");
+        return;
 
     }
-);
+
+
+    connectSocket(user);
+
+
+
+});
 
 
 
 
 
-// =====================================
-// CONNECT WEBSOCKET
-// =====================================
+
 
 function connectSocket(user){
 
 
-
-    const roomId = user.room_id;
-
-
-
     const protocol =
-        window.location.protocol === "https:"
-        ? "wss"
-        : "ws";
+    window.location.protocol==="https:"
+    ?"wss"
+    :"ws";
+
+
+    const url =
+    `${protocol}://${window.location.host}/ws/${user.room_id}/${user.id}`;
 
 
 
-    const websocketURL =
-        `${protocol}://${window.location.host}/ws/${roomId}/${user.id}`;
+    socket = new WebSocket(url);
 
 
 
-    console.log(
-        "Connecting:",
-        websocketURL
-    );
-
-
-
-    socket = new WebSocket(
-        websocketURL
-    );
-
-
-
-
-    socket.onopen = function(){
-
-
-        console.log(
-            "WebSocket Connected"
-        );
-
+    socket.onopen=()=>{
 
         updateStatus(
-            "Connected 🟢"
+        "Connected 🟢"
         );
-
 
     };
 
 
 
-
-
-    socket.onmessage = function(event){
+    socket.onmessage=(event)=>{
 
 
         const data =
-            JSON.parse(
-                event.data
-            );
+        JSON.parse(event.data);
 
 
-        displayMessage(
-            data
-        );
+
+        displayMessage(data);
 
 
     };
 
 
 
-
-
-
-    socket.onerror = function(error){
-
-
-        console.log(
-            "WebSocket Error",
-            error
-        );
+    socket.onclose=()=>{
 
 
         updateStatus(
-            "Error 🔴"
+        "Disconnected 🔴"
         );
 
 
     };
-
-
-
-
-
-
-
-    socket.onclose = function(){
-
-
-        console.log(
-            "WebSocket Closed"
-        );
-
-
-        updateStatus(
-            "Disconnected 🔴"
-        );
-
-
-    };
-
 
 
 
     loadOldMessages(
-        roomId
+    user.room_id
     );
 
 
@@ -231,23 +140,18 @@ function connectSocket(user){
 
 
 
-// =====================================
-// STATUS
-// =====================================
 
 function updateStatus(text){
 
-
     const status =
-        document.getElementById(
-            "roomStatus"
-        );
+    document.getElementById(
+    "roomStatus"
+    );
 
 
     if(status){
 
-        status.innerHTML =
-            text;
+        status.innerHTML=text;
 
     }
 
@@ -258,47 +162,29 @@ function updateStatus(text){
 
 
 
-
-// =====================================
-// SEND BUTTON
-// =====================================
 
 function setupSendButton(){
 
 
-    if(!sendBtn){
-        return;
-    }
+    sendBtn.onclick=()=>{
 
+        sendMessage();
 
-
-    sendBtn.onclick =
-        function(){
-
-            sendMessage();
-
-        };
-
+    };
 
 
 
     messageInput.addEventListener(
+    "keypress",
+    e=>{
 
-        "keypress",
+        if(e.key==="Enter"){
 
-        function(event){
-
-
-            if(event.key === "Enter"){
-
-                sendMessage();
-
-            }
+            sendMessage();
 
         }
 
-    );
-
+    });
 
 
 }
@@ -308,28 +194,22 @@ function setupSendButton(){
 
 
 
-// =====================================
-// SEND MESSAGE
-// =====================================
+
 
 function sendMessage(){
 
 
 
     const text =
-        messageInput.value.trim();
+    messageInput.value.trim();
 
 
 
     if(
-        text === "" ||
-        socket === null ||
-        socket.readyState !== WebSocket.OPEN
+    !text ||
+    !socket ||
+    socket.readyState!==WebSocket.OPEN
     ){
-
-        console.log(
-            "Socket not connected"
-        );
 
         return;
 
@@ -338,25 +218,21 @@ function sendMessage(){
 
 
 
-
     socket.send(
+    JSON.stringify({
 
-        JSON.stringify({
+        type:"text",
 
-            type:"text",
+        content:text
 
-            content:text
 
-        })
-
-    );
+    }));
 
 
 
     messageInput.value="";
 
 
-
 }
 
 
@@ -365,136 +241,89 @@ function sendMessage(){
 
 
 
-// =====================================
-// LOAD OLD MESSAGES
-// =====================================
+
 
 async function loadOldMessages(roomId){
 
 
-    try{
+    const response =
+    await fetch(
+    `/chat/${roomId}/messages`
+    );
 
 
-        const response =
-            await fetch(
-                `/chat/${roomId}/messages`
-            );
-
-
-
-        const messages =
-            await response.json();
+    const messages =
+    await response.json();
 
 
 
-
-        messages.forEach(
-
-            function(message){
+    messages.forEach(msg=>{
 
 
+        displayMessage({
 
-                if(message.is_image){
-
-
-                    displayMessage({
-
-                        type:"image",
-
-                        user_id:
-                            message.user_id,
-
-                        url:
-                            message.file_path
-
-                    });
+            type:
+            msg.is_image
+            ?
+            "image"
+            :
+            "text",
 
 
-                }
-                else{
+            user_id:
+            msg.user_id,
 
 
-                    displayMessage({
-
-                        type:"text",
-
-                        user_id:
-                            message.user_id,
-
-                        content:
-                            message.content
-
-                    });
+            content:
+            msg.content,
 
 
-                }
+            url:
+            msg.file_path,
 
 
-
-            }
-
-        );
+            message_id:
+            msg.id,
 
 
+            status:
+            "seen"
 
-    }
-
-    catch(error){
-
-
-        console.log(
-            "History error:",
-            error
-        );
+        });
 
 
-    }
+    });
 
 
 
 }
 
-
-
-
-
-
-
-
-// =====================================
-// DISPLAY MESSAGE
-// =====================================
-
 function displayMessage(data){
 
 
-
     if(!messageBox){
-
         return;
-
     }
 
 
 
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-
-    div.className =
-        "message";
-
-
-
-
     const user =
-        getCurrentUser();
+    getCurrentUser();
 
 
 
+    const div =
+    document.createElement("div");
+
+
+
+    div.classList.add(
+        "message"
+    );
+
+
+
+    // My message = right side
 
     if(
         user &&
@@ -505,26 +334,36 @@ function displayMessage(data){
             "my-message"
         );
 
+
+    }
+
+    // Other person's message = left side
+
+    else{
+
+        div.classList.add(
+            "other-message"
+        );
+
     }
 
 
 
 
 
+    let content = "";
+
 
 
     if(data.type === "image"){
 
 
-        div.innerHTML = `
+        content = `
 
-            <img 
-            src="${data.url}"
-            width="250"
-            style="
-            border-radius:10px;
-            "
-            >
+        <img 
+        src="${data.url}"
+        class="chat-image"
+        >
 
         `;
 
@@ -534,13 +373,13 @@ function displayMessage(data){
     else{
 
 
-        div.innerHTML = `
+        content = `
 
-            <p>
-            ${escapeHTML(
-                data.content || ""
-            )}
-            </p>
+        <span>
+        ${escapeHTML(
+            data.content || ""
+        )}
+        </span>
 
         `;
 
@@ -548,6 +387,31 @@ function displayMessage(data){
     }
 
 
+
+
+
+    div.innerHTML = `
+
+        <div class="message-content">
+
+            ${content}
+
+            ${
+            user &&
+            user.id === data.user_id
+            ?
+            `
+            <span class="ticks">
+            ✓✓
+            </span>
+            `
+            :
+            ""
+            }
+
+        </div>
+
+    `;
 
 
 
@@ -558,33 +422,21 @@ function displayMessage(data){
 
 
     messageBox.scrollTop =
-        messageBox.scrollHeight;
+    messageBox.scrollHeight;
 
 
 
 }
 
 
-
-
-
-
-
-// =====================================
-// SECURITY
-// =====================================
-
 function escapeHTML(text){
 
 
     const div =
-        document.createElement(
-            "div"
-        );
+    document.createElement("div");
 
 
-    div.textContent =
-        text;
+    div.textContent=text;
 
 
     return div.innerHTML;
