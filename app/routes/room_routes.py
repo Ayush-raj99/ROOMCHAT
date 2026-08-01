@@ -129,22 +129,47 @@ def join_room(
     data: RoomJoin,
     db: Session = Depends(get_db)
 ):
+    from app.models.models import User
+    from app.services.security import verify_password
 
-    allowed = user_can_access_room(
-        db,
-        data.username,
-        data.room_id,
-        data.password
-    )
+    user = db.query(User).filter(
+        User.username == data.username
+    ).first()
 
-    if not allowed:
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    room = get_room(db, data.room_id)
+
+    if not room:
+        raise HTTPException(
+            status_code=404,
+            detail="Room not found"
+        )
+
+    if not verify_password(
+        data.password,
+        room.password
+    ):
         raise HTTPException(
             status_code=401,
-            detail="Invalid room password or access denied"
+            detail="Wrong room password"
+        )
+
+    if not user_can_access_room(
+        db,
+        user.id,
+        room.id
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="You are not assigned to this room."
         )
 
     return {
-        "message": "Joined room successfully",
-        "room_id": data.room_id,
-        "username": data.username
+        "message": "Joined successfully",
+        "room_id": room.id
     }
