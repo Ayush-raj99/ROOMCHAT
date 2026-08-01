@@ -1,13 +1,11 @@
 /*
 RoomChat V2
-
 Chat JavaScript
 
-Features:
-- WebSocket chat
-- Left/right messages
-- WhatsApp style bubbles
-- Double tick
+Handles:
+- WebSocket connection
+- Text messages
+- Image upload
 - Image messages
 - Message history
 */
@@ -15,9 +13,12 @@ Features:
 
 let socket = null;
 
-let messageBox = null;
-let messageInput = null;
-let sendBtn = null;
+let messageBox;
+let messageInput;
+let sendBtn;
+
+let fileInput;
+let uploadBtn;
 
 
 
@@ -27,14 +28,11 @@ let sendBtn = null;
 
 function getCurrentUser(){
 
-    const user =
-        localStorage.getItem("user");
-
+    const user = localStorage.getItem("user");
 
     if(!user){
         return null;
     }
-
 
     return JSON.parse(user);
 
@@ -43,46 +41,45 @@ function getCurrentUser(){
 
 
 
-
 // =====================================
-// START
+// START CHAT
 // =====================================
-
 
 document.addEventListener(
 "DOMContentLoaded",
-()=>{
+function(){
 
 
     messageBox =
-        document.getElementById(
-            "messageBox"
-        );
+        document.getElementById("messageBox");
 
 
     messageInput =
-        document.getElementById(
-            "messageInput"
-        );
+        document.getElementById("messageInput");
 
 
     sendBtn =
-        document.getElementById(
-            "sendBtn"
-        );
+        document.getElementById("sendBtn");
+
+
+    fileInput =
+        document.getElementById("fileInput");
+
+
+    uploadBtn =
+        document.getElementById("uploadBtn");
 
 
 
-    const user =
-        getCurrentUser();
+    const user = getCurrentUser();
 
 
 
     if(!user){
 
-        alert(
-            "User not found"
-        );
+        alert("User not found");
+
+        window.location.href="/";
 
         return;
 
@@ -93,10 +90,14 @@ document.addEventListener(
     connectSocket(user);
 
 
+    setupSendButton();
+
+
+    setupUploadButton();
+
+
 
 });
-
-
 
 
 
@@ -106,7 +107,6 @@ document.addEventListener(
 // =====================================
 // WEBSOCKET
 // =====================================
-
 
 function connectSocket(user){
 
@@ -125,33 +125,27 @@ function connectSocket(user){
 
 
     console.log(
-        "Socket:",
+        "Connecting:",
         url
     );
 
 
 
-    socket =
-        new WebSocket(url);
+    socket = new WebSocket(url);
 
 
 
-
-    socket.onopen = ()=>{
-
+    socket.onopen=function(){
 
         updateStatus(
             "Connected 🟢"
         );
 
-
     };
 
 
 
-
-    socket.onmessage =
-    (event)=>{
+    socket.onmessage=function(event){
 
 
         const data =
@@ -160,40 +154,27 @@ function connectSocket(user){
             );
 
 
-        console.log(
-            "Received:",
-            data
-        );
-
-
-        displayMessage(
-            data
-        );
+        displayMessage(data);
 
 
     };
 
 
 
+    socket.onerror=function(){
 
-    socket.onclose = ()=>{
+        updateStatus(
+            "Error 🔴"
+        );
 
+    };
+
+
+
+    socket.onclose=function(){
 
         updateStatus(
             "Disconnected 🔴"
-        );
-
-
-    };
-
-
-
-    socket.onerror =
-    (e)=>{
-
-        console.log(
-            "Socket error",
-            e
         );
 
     };
@@ -204,15 +185,7 @@ function connectSocket(user){
         user.room_id
     );
 
-
-    setupSend();
-
-
 }
-
-
-
-
 
 
 
@@ -221,7 +194,6 @@ function connectSocket(user){
 // =====================================
 // STATUS
 // =====================================
-
 
 function updateStatus(text){
 
@@ -234,8 +206,7 @@ function updateStatus(text){
 
     if(status){
 
-        status.innerHTML =
-            text;
+        status.innerHTML=text;
 
     }
 
@@ -247,45 +218,41 @@ function updateStatus(text){
 
 
 
-
-
 // =====================================
-// SEND MESSAGE
+// TEXT MESSAGE
 // =====================================
 
-
-function setupSend(){
-
+function setupSendButton(){
 
 
-    if(!sendBtn)
+    if(!sendBtn){
         return;
+    }
 
 
 
-    sendBtn.onclick =
-    sendMessage;
+    sendBtn.onclick=function(){
+
+        sendMessage();
+
+    };
 
 
 
     messageInput.addEventListener(
-        "keypress",
-        (e)=>{
+    "keypress",
+    function(e){
 
-            if(e.key==="Enter"){
+        if(e.key==="Enter"){
 
-                sendMessage();
-
-            }
+            sendMessage();
 
         }
-    );
+
+    });
 
 
 }
-
-
-
 
 
 
@@ -302,7 +269,7 @@ function sendMessage(){
     if(
         !text ||
         !socket ||
-        socket.readyState !== 1
+        socket.readyState !== WebSocket.OPEN
     ){
 
         return;
@@ -328,9 +295,132 @@ function sendMessage(){
     messageInput.value="";
 
 
-
 }
 
+
+
+
+
+
+
+
+// =====================================
+// IMAGE UPLOAD
+// =====================================
+
+function setupUploadButton(){
+
+
+
+    if(!uploadBtn){
+        return;
+    }
+
+
+
+
+    uploadBtn.onclick = async function(){
+
+
+
+        const file =
+            fileInput.files[0];
+
+
+
+        if(!file){
+
+            alert(
+                "Select file first"
+            );
+
+            return;
+
+        }
+
+
+
+        const formData =
+            new FormData();
+
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+
+        try{
+
+
+            const response =
+            await fetch(
+                "/upload/file",
+                {
+
+                    method:"POST",
+
+                    body:formData
+
+                }
+            );
+
+
+
+            const data =
+                await response.json();
+
+
+
+
+            if(
+                socket &&
+                socket.readyState === WebSocket.OPEN
+            ){
+
+
+                socket.send(
+
+                    JSON.stringify({
+
+                        type:"image",
+
+                        url:data.url
+
+                    })
+
+                );
+
+
+            }
+
+
+
+            fileInput.value="";
+
+
+
+        }
+
+        catch(error){
+
+
+            console.log(
+                "Upload error:",
+                error
+            );
+
+
+        }
+
+
+
+    };
+
+
+}
 
 
 
@@ -343,7 +433,6 @@ function sendMessage(){
 // OLD MESSAGES
 // =====================================
 
-
 async function loadOldMessages(roomId){
 
 
@@ -351,42 +440,58 @@ async function loadOldMessages(roomId){
     try{
 
 
-        const res =
-            await fetch(
-                `/chat/${roomId}/messages`
-            );
+        const response =
+        await fetch(
+            `/chat/${roomId}/messages`
+        );
+
 
 
         const messages =
-            await res.json();
+            await response.json();
 
 
 
         messages.forEach(
-        (msg)=>{
+        function(message){
 
 
-            displayMessage({
 
-                type:
-                    msg.is_image
-                    ? "image"
-                    : "text",
+            if(message.is_image){
 
 
-                user_id:
-                    msg.user_id,
+                displayMessage({
+
+                    type:"image",
+
+                    user_id:
+                    message.user_id,
+
+                    url:
+                    message.file_path
+
+                });
 
 
-                content:
-                    msg.content,
+            }
+
+            else{
 
 
-                url:
-                    msg.file_path
+                displayMessage({
 
-            });
+                    type:"text",
 
+                    user_id:
+                    message.user_id,
+
+                    content:
+                    message.content
+
+                });
+
+
+            }
 
 
         });
@@ -394,19 +499,16 @@ async function loadOldMessages(roomId){
 
 
     }
-    catch(e){
 
-        console.log(
-            "History error",
-            e
-        );
+    catch(error){
+
+        console.log(error);
 
     }
 
 
 
 }
-
 
 
 
@@ -419,13 +521,15 @@ async function loadOldMessages(roomId){
 // DISPLAY MESSAGE
 // =====================================
 
-
 function displayMessage(data){
 
 
 
-    if(!messageBox)
+    if(!messageBox){
+
         return;
+
+    }
 
 
 
@@ -436,34 +540,38 @@ function displayMessage(data){
 
 
 
-    const currentUser =
+    div.className =
+        "message";
+
+
+
+
+    const user =
         getCurrentUser();
 
 
 
 
 
-    const mine =
-        currentUser &&
-        Number(currentUser.id)
-        ===
-        Number(data.user_id);
+    if(
+        user &&
+        user.id === data.user_id
+    ){
 
-
-
-
-    if(mine){
-
-        div.className =
-            "message my-message";
+        div.classList.add(
+            "my-message"
+        );
 
     }
+
     else{
 
-        div.className =
-            "message other-message";
+        div.classList.add(
+            "other-message"
+        );
 
     }
+
 
 
 
@@ -472,13 +580,15 @@ function displayMessage(data){
     if(data.type==="image"){
 
 
-        div.innerHTML = `
+        div.innerHTML=`
 
-        <img src="${data.url}">
-
-        <span class="tick">
-            ✓✓
-        </span>
+        <img
+        src="${data.url}"
+        width="250"
+        style="
+        border-radius:12px;
+        "
+        >
 
         `;
 
@@ -488,7 +598,7 @@ function displayMessage(data){
     else{
 
 
-        div.innerHTML = `
+        div.innerHTML=`
 
         <p>
         ${escapeHTML(
@@ -496,16 +606,10 @@ function displayMessage(data){
         )}
         </p>
 
-        <span class="tick">
-            ✓✓
-        </span>
-
         `;
 
 
     }
-
-
 
 
 
@@ -517,7 +621,7 @@ function displayMessage(data){
 
 
     messageBox.scrollTop =
-        messageBox.scrollHeight;
+    messageBox.scrollHeight;
 
 
 
@@ -528,25 +632,20 @@ function displayMessage(data){
 
 
 
-
-
-
 // =====================================
 // SECURITY
 // =====================================
-
 
 function escapeHTML(text){
 
 
     const div =
-        document.createElement(
-            "div"
-        );
+    document.createElement(
+        "div"
+    );
 
 
-    div.textContent =
-        text;
+    div.textContent=text;
 
 
     return div.innerHTML;
