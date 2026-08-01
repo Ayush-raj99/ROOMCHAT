@@ -150,3 +150,27 @@ def test():
     return {
         "status": "RoomChat V2 running"
     }
+
+
+    @app.get("/check-members")
+def check_members():
+
+    from app.database.database import SessionLocal
+    from app.models.models import RoomMember
+
+    db = SessionLocal()
+
+    members = db.query(RoomMember).all()
+
+    result = []
+
+    for m in members:
+        result.append({
+            "id": m.id,
+            "user_id": m.user_id,
+            "room_id": m.room_id
+        })
+
+    db.close()
+
+    return result
