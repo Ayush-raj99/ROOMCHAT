@@ -1,9 +1,9 @@
 fastapi
-uvicorn
+uvicorn[standard]
+websockets
 sqlalchemy
-psycopg2-binary==2.9.9
-jinja2
-python-multipart
-passlib
-bcrypt==4.0.1
+psycopg2-binary
 python-dotenv
+jinja2
+passlib
+bcrypt
