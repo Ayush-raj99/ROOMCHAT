@@ -354,16 +354,9 @@ return {
     "message":"User assigned successfully",
     "user_id":member.user_id,
     "room_id":member.room_id
+
 }
 
-    return {
-
-        "message": "User assigned",
-
-        "result": result
-
-
-    }
 @router.get("/debug-members")
 def debug_members(
     db: Session = Depends(get_db)
