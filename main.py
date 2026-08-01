@@ -62,7 +62,8 @@ app.add_middleware(
 
 app.mount(
     "/static",
-    StaticFiles(directory="app/static"),
+    StaticFiles(directory="app/static",
+    html=True),
     name="static"
 )
 
