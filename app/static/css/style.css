@@ -1202,3 +1202,26 @@ UTILITY
     margin-bottom:20px;
 
 }
+
+/* ===========================
+   MESSAGE TIME
+=========================== */
+
+.message-footer{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:4px;
+    margin-top:4px;
+}
+
+.message-time{
+    font-size:11px;
+    color:#8e8e93;
+    user-select:none;
+}
+
+.message-tick{
+    font-size:12px;
+    color:#8e8e93;
+}

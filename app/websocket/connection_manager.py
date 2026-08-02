@@ -126,6 +126,12 @@ class ConnectionManager:
             return
 
 
+            print(
+    "ROOM USERS:",
+    len(self.connections[room_id])
+)
+
+
 
         for connection in self.connections[room_id]:
 

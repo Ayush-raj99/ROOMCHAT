@@ -99,25 +99,35 @@ async def chat_socket(
 
 
                 message = create_message(
+
                     db,
+
                     room_id,
+
                     user_id,
+
                     content=content
+
                 )
 
 
 
                 response = {
 
-                    "type": "text",
+    "id": message["id"],
 
-                    "user_id": user_id,
+    "type": "text",
 
-                    "content": content,
+    "user_id": user_id,
 
-                    "message_id": message.id
+    "content": message["content"],
 
-                }
+    "created_at": message["created_at"]
+
+}
+
+
+                print("SENDING TO USERS:", response)
 
 
 
@@ -128,7 +138,6 @@ async def chat_socket(
                     room_id
 
                 )
-
 
 
 
@@ -145,11 +154,9 @@ async def chat_socket(
                 )
 
 
-
                 if not image_url:
 
                     continue
-
 
 
 
@@ -168,23 +175,19 @@ async def chat_socket(
                 )
 
 
-
                 response = {
 
+    "id": message["id"],
 
-                    "type": "image",
+    "type": "image",
 
+    "user_id": user_id,
 
-                    "user_id": int(user_id),
+    "url": image_url,
 
+    "created_at": message["created_at"]
 
-                    "url": image_url,
-
-
-                    "message_id": message.id
-
-
-                }
+}
 
 
 
@@ -210,7 +213,6 @@ async def chat_socket(
         )
 
 
-
         manager.disconnect(
 
             websocket,
@@ -233,7 +235,6 @@ async def chat_socket(
             e
 
         )
-
 
 
         manager.disconnect(

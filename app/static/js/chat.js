@@ -6,12 +6,10 @@ WhatsApp Style Chat JS
 
 let socket = null;
 
-
 let messageBox;
 let messageInput;
 let sendBtn;
 let fileInput;
-
 
 
 
@@ -35,9 +33,55 @@ function getCurrentUser(){
 
     return JSON.parse(user);
 
-
 }
 
+
+
+
+
+// =============================
+// FORMAT TIME
+// =============================
+
+function formatTime(dateString){
+
+
+    if(!dateString){
+
+        return "";
+
+    }
+
+
+    const date =
+    new Date(dateString);
+
+
+
+    // Convert UTC to India time (UTC + 5:30)
+
+    date.setMinutes(
+        date.getMinutes() + 330
+    );
+
+
+
+    return date.toLocaleTimeString(
+
+        [],
+
+        {
+            hour:"2-digit",
+
+            minute:"2-digit",
+
+            hour12:false
+
+        }
+
+    );
+
+}
 
 
 
@@ -47,11 +91,9 @@ function getCurrentUser(){
 // START
 // =============================
 
-
 document.addEventListener(
 "DOMContentLoaded",
 function(){
-
 
 
     messageBox =
@@ -60,19 +102,16 @@ function(){
     );
 
 
-
     messageInput =
     document.getElementById(
         "messageInput"
     );
 
 
-
     sendBtn =
     document.getElementById(
         "sendBtn"
     );
-
 
 
     fileInput =
@@ -82,10 +121,8 @@ function(){
 
 
 
-
     const user =
     getCurrentUser();
-
 
 
 
@@ -99,14 +136,12 @@ function(){
 
 
 
-
     connectSocket(user);
 
 
 
     sendBtn.onclick =
     sendMessage;
-
 
 
 
@@ -130,9 +165,7 @@ function(){
     );
 
 
-
 });
-
 
 
 
@@ -143,15 +176,15 @@ function(){
 // WEBSOCKET
 // =============================
 
-
 function connectSocket(user){
-
 
 
     const protocol =
     location.protocol==="https:"
-    ? "wss"
-    : "ws";
+    ?
+    "wss"
+    :
+    "ws";
 
 
 
@@ -164,17 +197,13 @@ function connectSocket(user){
 
 
 
-
-
     socket.onopen=function(){
 
         updateStatus(
             "Online 🟢"
         );
 
-
     };
-
 
 
 
@@ -194,13 +223,11 @@ function connectSocket(user){
 
 
 
-
     socket.onclose=function(){
 
         updateStatus(
             "Disconnected"
         );
-
 
     };
 
@@ -219,11 +246,9 @@ function connectSocket(user){
 
 
 
-
 // =============================
 // STATUS
 // =============================
-
 
 function updateStatus(text){
 
@@ -249,19 +274,15 @@ function updateStatus(text){
 
 
 
-
 // =============================
 // SEND TEXT
 // =============================
 
-
 function sendMessage(){
-
 
 
     const text =
     messageInput.value.trim();
-
 
 
 
@@ -294,9 +315,7 @@ function sendMessage(){
     messageInput.value="";
 
 
-
 }
-
 
 
 
@@ -309,14 +328,11 @@ function sendMessage(){
 // IMAGE UPLOAD
 // =============================
 
-
 async function uploadImage(){
-
 
 
     const file =
     fileInput.files[0];
-
 
 
     if(!file){
@@ -324,7 +340,6 @@ async function uploadImage(){
         return;
 
     }
-
 
 
 
@@ -337,7 +352,6 @@ async function uploadImage(){
         "file",
         file
     );
-
 
 
 
@@ -358,10 +372,8 @@ async function uploadImage(){
 
 
 
-
     const data =
     await response.json();
-
 
 
 
@@ -391,11 +403,9 @@ async function uploadImage(){
 
 
 
-
 // =============================
 // OLD MESSAGES
 // =============================
-
 
 async function loadOldMessages(roomId){
 
@@ -404,6 +414,7 @@ async function loadOldMessages(roomId){
     await fetch(
         `/chat/${roomId}/messages`
     );
+
 
 
     const messages =
@@ -416,6 +427,10 @@ async function loadOldMessages(roomId){
 
 
         displayMessage({
+
+            id:
+            msg.id,
+
 
             type:
             msg.is_image
@@ -434,7 +449,11 @@ async function loadOldMessages(roomId){
 
 
             url:
-            msg.file_path
+            msg.file_path,
+
+
+            created_at:
+            msg.created_at
 
 
         });
@@ -458,9 +477,7 @@ async function loadOldMessages(roomId){
 // DISPLAY MESSAGE
 // =============================
 
-
 function displayMessage(data){
-
 
 
     const div =
@@ -475,7 +492,6 @@ function displayMessage(data){
 
 
 
-
     const user =
     getCurrentUser();
 
@@ -483,13 +499,13 @@ function displayMessage(data){
 
 
 
-    if(
-        user.id === data.user_id
-    ){
+    if(user.id === data.user_id){
+
 
         div.classList.add(
             "my-message"
         );
+
 
     }
     else{
@@ -505,15 +521,20 @@ function displayMessage(data){
 
 
 
+    const time =
+    formatTime(
+        data.created_at
+    );
+
+
+
 
 
     if(data.type==="image"){
 
 
+        div.innerHTML = `
 
-        div.innerHTML=
-
-        `
 
         <img
 
@@ -525,38 +546,84 @@ function displayMessage(data){
 
         >
 
+
+
+        <div class="message-footer">
+
+
+        <span class="message-time">
+        ${time}
+        </span>
+
+
+
+        ${
+        user.id===data.user_id
+        ?
+        `
         <span class="message-tick">
         ✓✓
         </span>
+        `
+        :
+        ""
+        }
+
+
+
+        </div>
+
 
         `;
 
 
 
     }
-
     else{
 
 
-        div.innerHTML=
+        div.innerHTML = `
 
-        `
 
         <span>
+
         ${escapeHTML(data.content)}
+
         </span>
 
 
+
+        <div class="message-footer">
+
+
+        <span class="message-time">
+        ${time}
+        </span>
+
+
+
+        ${
+        user.id===data.user_id
+        ?
+        `
         <span class="message-tick">
         ✓✓
         </span>
+        `
+        :
+        ""
+        }
+
+
+
+        </div>
+
 
 
         `;
 
 
     }
-
 
 
 
@@ -583,9 +650,7 @@ function displayMessage(data){
 // IMAGE VIEWER
 // =============================
 
-
 function openImageViewer(url){
-
 
 
     const viewer =
@@ -599,9 +664,7 @@ function openImageViewer(url){
 
 
 
-    viewer.innerHTML=
-
-    `
+    viewer.innerHTML = `
 
     <span class="close-viewer">
     ×
@@ -636,10 +699,10 @@ function openImageViewer(url){
 
 
 
+
 // =============================
 // SECURITY
 // =============================
-
 
 function escapeHTML(text){
 

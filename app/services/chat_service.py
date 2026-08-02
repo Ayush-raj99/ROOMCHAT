@@ -15,6 +15,8 @@ from app.models.models import Message
 
 
 
+
+
 # ==========================================================
 # CREATE MESSAGE
 # ==========================================================
@@ -55,6 +57,7 @@ def create_message(
     )
 
 
+
     db.add(message)
 
     db.commit()
@@ -62,7 +65,30 @@ def create_message(
     db.refresh(message)
 
 
-    return message
+
+    return {
+
+        "id": message.id,
+
+        "room_id": message.room_id,
+
+        "user_id": message.user_id,
+
+        "content": message.content,
+
+        "file_name": message.file_name,
+
+        "file_path": message.file_path,
+
+        "is_image": message.is_image,
+
+        "created_at": message.created_at.isoformat()
+
+    }
+
+
+
+
 
 
 
@@ -79,7 +105,7 @@ def get_room_messages(
 ):
 
 
-    return db.query(Message).filter(
+    messages = db.query(Message).filter(
 
         Message.room_id == room_id
 
@@ -88,3 +114,36 @@ def get_room_messages(
         Message.created_at.asc()
 
     ).all()
+
+
+
+    result = []
+
+
+
+    for message in messages:
+
+
+        result.append({
+
+            "id": message.id,
+
+            "room_id": message.room_id,
+
+            "user_id": message.user_id,
+
+            "content": message.content,
+
+            "file_name": message.file_name,
+
+            "file_path": message.file_path,
+
+            "is_image": message.is_image,
+
+            "created_at": message.created_at.isoformat()
+
+        })
+
+
+
+    return result
