@@ -723,31 +723,14 @@ function escapeHTML(text){
 
 // =============================
 // CLICKABLE LINKS
-// =============================
+// =========================
+function makeLinksClickable(text) {
 
-function makeLinksClickable(text){
+        const escaped = escapeHTML(text);
 
-    const urlRegex =
-        /(https?:\/\/[^\s]+)/g;
+            return escaped.replace(
+                    /(https?:\/\/[^\s]+)/g,
+                            '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>'
+                                );
 
-            return text.replace(
-
-                    urlRegex,
-
-                            function(url){
-
-                                        return `
-                                                    <a
-                                                                    href="${url}"
-                                                                                    target="_blank"
-                                                                                                    rel="noopener noreferrer"
-                                                                                                                    class="chat-link">
-                                                                                                                                    ${url}
-                                                                                                                                                </a>
-                                                                                                                                                            `;
-
-                                                                                                                                                                    }
-
-                                                                                                                                                                        );
-
-                                                                                                                                                                        }
+                                }
