@@ -1225,3 +1225,85 @@ UTILITY
     font-size:12px;
     color:#8e8e93;
 }
+
+/* ==============================
+   CHAT LINKS
+   ============================== */
+
+   .chat-link{
+
+       display:inline-flex;
+
+           align-items:center;
+
+               gap:6px;
+
+                   margin-top:4px;
+
+                       padding:6px 10px;
+
+                           background:#eef6ff;
+
+                               border:1px solid #b8dcff;
+
+                                   border-radius:10px;
+
+                                       color:#0a66c2;
+
+                                           font-size:14px;
+
+                                               font-weight:600;
+
+                                                   text-decoration:none;
+
+                                                       word-break:break-all;
+
+                                                           transition:.25s;
+
+                                                           }
+
+                                                           .chat-link::before{
+
+                                                               content:"🔗";
+
+                                                                   font-size:16px;
+
+                                                                   }
+
+                                                                   .chat-link:hover{
+
+                                                                       background:#dceeff;
+
+                                                                           border-color:#0a66c2;
+
+                                                                               color:#084c94;
+
+                                                                                   transform:scale(1.02);
+
+                                                                                   }
+
+                                                                                   .my-message .chat-link{
+
+                                                                                       background:#dcf8c6;
+
+                                                                                           border:1px solid #b8e6a3;
+
+                                                                                               color:#075e54;
+
+                                                                                               }
+
+                                                                                               .my-message .chat-link:hover{
+
+                                                                                                   background:#c8f0ae;
+
+                                                                                                   }
+
+                                                                                                   .other-message .chat-link{
+
+                                                                                                       background:#f5f5f5;
+
+                                                                                                           border:1px solid #dddddd;
+
+                                                                                                               color:#0a66c2;
+
+                                                                                                               }

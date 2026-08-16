@@ -587,7 +587,7 @@ function displayMessage(data){
 
         <span>
 
-        ${escapeHTML(data.content)}
+        ${makeLinkClickable(escapeHTML(data.content))}
 
         </span>
 
@@ -720,3 +720,34 @@ function escapeHTML(text){
 
 
 }
+
+// =============================
+// CLICKABLE LINKS
+// =============================
+
+function makeLinksClickable(text){
+
+    const urlRegex =
+        /(https?:\/\/[^\s]+)/g;
+
+            return text.replace(
+
+                    urlRegex,
+
+                            function(url){
+
+                                        return `
+                                                    <a
+                                                                    href="${url}"
+                                                                                    target="_blank"
+                                                                                                    rel="noopener noreferrer"
+                                                                                                                    class="chat-link">
+                                                                                                                                    ${url}
+                                                                                                                                                </a>
+                                                                                                                                                            `;
+
+                                                                                                                                                                    }
+
+                                                                                                                                                                        );
+
+                                                                                                                                                                        }
