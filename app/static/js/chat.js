@@ -587,7 +587,7 @@ function displayMessage(data){
 
         <span>
 
-        ${makeLinkClickable(escapeHTML(data.content))}
+        ${makeLinkClickable(data.content)}
 
         </span>
 
