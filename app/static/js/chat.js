@@ -581,50 +581,43 @@ function displayMessage(data){
     }
     else{
 
+    div.innerHTML = `
 
-        div.innerHTML = `
+    <span class="message-text"></span>
 
+    <div class="message-footer">
 
-        <span>
+    <span class="message-time">
+    ${time}
+    </span>
 
-        ${makeLinkClickable(data.content)}
-
-        </span>
-
-
-
-        <div class="message-footer">
-
-
-        <span class="message-time">
-        ${time}
-        </span>
-
-
-
-        ${
-        user.id===data.user_id
-        ?
-        `
-        <span class="message-tick">
-        ✓✓
-        </span>
-        `
-        :
-        ""
-        }
-
-
-
-        </div>
-
-
-
-        `;
-
-
+    ${
+    user.id===data.user_id
+    ?
+    `
+    <span class="message-tick">
+    ✓✓
+    </span>
+    `
+    :
+    ""
     }
 
+    </div>
+
+    `;
+
+
+    const textContainer =
+    div.querySelector(".message-text");
+
+
+    textContainer.innerHTML =
+    makeLinksClickable(
+        escapeHTML(data.content)
+    );
+
+}
 
 
 
@@ -723,14 +716,28 @@ function escapeHTML(text){
 
 // =============================
 // CLICKABLE LINKS
-// =========================
-function makeLinksClickable(text) {
+// ========================
+function makeLinksClickable(text){
 
-        const escaped = escapeHTML(text);
+    const regex =
+    /(https?:\/\/[^\s]+)/g;
 
-            return escaped.replace(
-                    /(https?:\/\/[^\s]+)/g,
-                            '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>'
-                                );
+    return text.replace(
 
-                                }
+        regex,
+
+        (url)=>{
+
+            return `<a
+href="${url}"
+target="_blank"
+rel="noopener noreferrer"
+class="chat-link">
+${url}
+</a>`;
+
+        }
+
+    );
+
+}
