@@ -21,8 +21,10 @@ from app.database.database import (
 
 from app.models.models import (
     Room,
-    RoomMember
+    RoomMember,
+    RoomLoginHistory
 )
+
 
 
 

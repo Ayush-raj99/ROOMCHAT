@@ -15,7 +15,8 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
 from app.database.database import get_db
-from app.models.models import User
+from app.models.models import User,
+RoomLoginHistory
 
 from app.services.room_service import (
     create_room,
@@ -167,6 +168,16 @@ def join_room(
             status_code=403,
             detail="You are not assigned to this room."
         )
+
+# Saves successfully room login his
+login_history = RoomLoginHistory(
+    username=user.usermame,
+    room_id=room.id
+
+)
+
+db.add(login_history)
+db.commit()
 
     return {
         "message": "Joined successfully",

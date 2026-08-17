@@ -18,7 +18,8 @@ from sqlalchemy import (
     Text,
     DateTime,
     ForeignKey,
-    Boolean
+    Boolean,
+    func
 )
 
 from sqlalchemy.orm import relationship
@@ -341,3 +342,13 @@ class Message(Base):
         back_populates="messages"
 
     )
+
+### Login Detail__tables...
+
+class RoomLoginHistory(Base):
+    __tablename__ = "room_login_history"
+
+        id = Column(Integer, primary_key=True, index=True)
+            username = Column(String, nullable=False)
+                room_id = Column(String, nullable=False, index=True)
+                    login_time = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

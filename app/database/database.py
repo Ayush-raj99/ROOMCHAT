@@ -12,6 +12,11 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
+from app.database.models import RoomLoginHistory
+
+
+
+Base.metadata.create_all(bind=engine)
 
 # ==========================================================
 # LOAD ENVIRONMENT VARIABLES
