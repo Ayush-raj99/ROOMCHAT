@@ -19,10 +19,15 @@ if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL not found inside .env")
 
 # Database engine
+
+# Database engine — use Indian Standard Time
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,
     pool_recycle=300,
+    connect_args={
+        "options": "-c timezone=Asia/Kolkata"
+    },
     future=True,
 )
 
