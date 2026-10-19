@@ -1,3 +1,4 @@
+
 """
 RoomChat V2
 
@@ -7,6 +8,7 @@ Handles:
 - Create room
 - Join room page
 - Room access verification
+- Successful room login history
 """
 
 from fastapi import APIRouter, Depends, Request, HTTPException
@@ -15,8 +17,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
 from app.database.database import get_db
-from app.models.models import User,
-RoomLoginHistory
+from app.models.models import User, UserLoginHistory
 
 from app.services.room_service import (
     create_room,
@@ -139,16 +140,7 @@ def join_room(
         room.password
     )
 
-    print("\n================ JOIN ROOM DEBUG ================")
-    print("Username :", data.username)
-    print("User ID  :", user.id)
-    print("Room ID Requested :", data.room_id)
-    print("Room ID Found     :", room.id)
-    print("Password Verified :", password_ok)
-
     if not password_ok:
-        print("Password check FAILED")
-        print("=================================================\n")
         raise HTTPException(
             status_code=401,
             detail="Wrong room password"
@@ -160,24 +152,19 @@ def join_room(
         room.id
     )
 
-    print("Access Allowed :", allowed)
-    print("=================================================\n")
-
     if not allowed:
         raise HTTPException(
             status_code=403,
             detail="You are not assigned to this room."
         )
 
-# Saves successfully room login his
-login_history = RoomLoginHistory(
-    username=user.usermame,
-    room_id=room.id
+    # Record successful room access using the user ID.
+    login_history = UserLoginHistory(
+        user_id=user.id
+    )
 
-)
-
-db.add(login_history)
-db.commit()
+    db.add(login_history)
+    db.commit()
 
     return {
         "message": "Joined successfully",

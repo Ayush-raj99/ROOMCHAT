@@ -1,89 +1,46 @@
+
 """
 RoomChat V2
 Database Configuration
-
-This file will NEVER need to be changed again.
 """
 
 import os
 
 from dotenv import load_dotenv
-
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import sessionmaker
-from app.database.models import RoomLoginHistory
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-
-
-Base.metadata.create_all(bind=engine)
-
-# ==========================================================
-# LOAD ENVIRONMENT VARIABLES
-# ==========================================================
-
+# Load environment variables
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_URL is None:
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL not found inside .env")
 
-    raise RuntimeError(
-
-        "DATABASE_URL not found inside .env"
-
-    )
-
-# ==========================================================
-# DATABASE ENGINE
-# ==========================================================
-
+# Database engine
 engine = create_engine(
-
     DATABASE_URL,
-
     pool_pre_ping=True,
-
     pool_recycle=300,
-
-    future=True
-
+    future=True,
 )
 
-# ==========================================================
-# SESSION
-# ==========================================================
-
-SessionLocal = sessionmaker(
-
-    bind=engine,
-
-    autoflush=False,
-
-    autocommit=False,
-
-    future=True
-
-)
-
-# ==========================================================
-# BASE MODEL
-# ==========================================================
-
+# SQLAlchemy base
 Base = declarative_base()
 
-# ==========================================================
-# DATABASE DEPENDENCY
-# ==========================================================
+# Database session
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False,
+    future=True,
+)
 
+# Database dependency
 def get_db():
-
     db = SessionLocal()
-
     try:
-
         yield db
-
     finally:
-
         db.close()

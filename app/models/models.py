@@ -343,12 +343,25 @@ class Message(Base):
 
     )
 
-### Login Detail__tables...
+# ==========================================================
+# USER LOGIN HISTORY
+# Records each successful user login
+# ==========================================================
 
-class RoomLoginHistory(Base):
-    __tablename__ = "room_login_history"
+class UserLoginHistory(Base):
+    __tablename__ = "user_login_history"
 
-        id = Column(Integer, primary_key=True, index=True)
-            username = Column(String, nullable=False)
-                room_id = Column(String, nullable=False, index=True)
-                    login_time = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True
+    )
+
+    login_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
