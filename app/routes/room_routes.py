@@ -10,6 +10,8 @@ Handles:
 - Room access verification
 - Successful room login history
 """
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.templating import Jinja2Templates
@@ -160,8 +162,9 @@ def join_room(
 
     # Record successful room access using the user ID.
     login_history = UserLoginHistory(
-        user_id=user.id
-    )
+    user_id=user.id,
+    login_at=datetime.now(ZoneInfo("Asia/Kolkata"))
+)
 
     db.add(login_history)
     db.commit()
