@@ -470,7 +470,7 @@ HEADER
 
 .chat-header{
 
-    background:#075E54;
+    background:#b8dcff;
 
     padding:18px 22px;
 
@@ -488,7 +488,7 @@ HEADER
 
     font-weight:600;
 
-    color:white;
+    color:Black;
 
 }
 
@@ -574,7 +574,7 @@ ME
 
     margin-left:auto;
 
-    background:#005C4B;
+    background:#b8dcff;
 
     border-top-right-radius:4px;
 
@@ -610,7 +610,7 @@ TIME
 
     font-size:11px;
 
-    color:#d2d2d2;
+    color:Black;
 
 }
 
